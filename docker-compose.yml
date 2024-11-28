@@ -1,0 +1,56 @@
+networks:
+  web:
+    external: true
+  lan:
+    external: false
+    name: lan_${NAME}
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000:8000"  # Localhost
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - web
+      - lan
+    command: >
+      sh -c "
+      if [ -f app/settings.py ]; then
+        # Ajouter django.jrcan.dev à ALLOWED_HOSTS
+        grep -qxF \"ALLOWED_HOSTS = ['kameleon.jrcan.dev']\" app/settings.py || \
+        sed -i \"/^ALLOWED_HOSTS/c\\ALLOWED_HOSTS = ['kameleon.jrcan.dev']\" app/settings.py;
+      fi &&
+      python manage.py makemigrations &&
+      python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000
+      "
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${NAME}.entryPoints=websecure
+      - traefik.http.routers.${NAME}.rule=Host(`${NAME}.jrcan.dev`)
+      - traefik.http.routers.${NAME}.tls=true
+      - traefik.http.routers.${NAME}.tls.certresolver=myresolver
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: django_db
+      POSTGRES_USER: django_user
+      POSTGRES_PASSWORD: secure_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lan
+
+volumes:
+  postgres_data:

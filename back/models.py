@@ -162,7 +162,7 @@ class Clan(models.Model):
 class Resolve(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     riddle = models.ForeignKey(Riddle, on_delete=models.CASCADE)
-    clue_used = models.BooleanField(default=False)  # Indique si un indice a été utilisé
+    clue_used = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} resolved Riddle {self.riddle.riddle_id}"
@@ -171,7 +171,7 @@ class Resolve(models.Model):
 class Compete(models.Model):
     clan = models.ForeignKey(Clan, on_delete=models.CASCADE)
     riddle = models.ForeignKey(Riddle, on_delete=models.CASCADE)
-    clue_used = models.BooleanField(default=False)  # Indique si un indice a été utilisé
+    clue_used = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Clan {self.clan.clan_name} competes on Riddle {self.riddle.riddle_id}"
