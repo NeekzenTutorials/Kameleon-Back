@@ -8,9 +8,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app/ . 
+COPY kameleon_back/ . 
 COPY .env /app/.env
-COPY back/ .
+COPY back/ ./back/
 
 RUN ls
 

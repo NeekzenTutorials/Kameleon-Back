@@ -26,8 +26,8 @@ services:
       sh -c "
       if [ -f app/settings.py ]; then
         # Ajouter django.jrcan.dev à ALLOWED_HOSTS
-        grep -qxF \"ALLOWED_HOSTS = ['kameleon.jrcan.dev']\" app/settings.py || \
-        sed -i \"/^ALLOWED_HOSTS/c\\ALLOWED_HOSTS = ['kameleon.jrcan.dev']\" app/settings.py;
+        grep -qxF \"ALLOWED_HOSTS = ['kameleonback.jrcan.dev']\" app/settings.py || \
+        sed -i \"/^ALLOWED_HOSTS/c\\ALLOWED_HOSTS = ['kameleonback.jrcan.dev']\" app/settings.py;
       fi &&
       python manage.py makemigrations &&
       python manage.py migrate &&
