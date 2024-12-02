@@ -42,17 +42,24 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
     'back',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://kameleon.jrcan.dev  ",
 ]
 
 ROOT_URLCONF = 'kameleon_back.urls'
@@ -82,10 +89,10 @@ WSGI_APPLICATION = 'kameleon_back.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME', default='kameleon_test_2'),  # Name of the database
-        'USER': env('DB_USER', default='nathanfourny'),   # Name of the user
-        'PASSWORD': env('DB_PASSWORD', default=''),       # password of the database
-        'HOST': env('DB_HOST', default='localhost'),      # Host PostgreSQL
+        'NAME': env('DB_NAME', default='django_db'),  # Name of the database
+        'USER': env('DB_USER', default='django_user'),   # Name of the user
+        'PASSWORD': env('DB_PASSWORD', default='secure_password'),       # password of the database
+        'HOST': env('DB_HOST', default='db'),      # Host PostgreSQL
         'PORT': env('DB_PORT', default='5432'),           # Port PostgreSQL
     }
 }

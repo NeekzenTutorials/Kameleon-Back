@@ -1,16 +1,19 @@
-from django.shortcuts import render
-from django.contrib.auth import authenticate
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth.hashers import make_password
 from .models import User
+from .serializers import UserSerializer
 
-def latest_users(request):
-    result = None  # Result of authentification
-
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)  # Check if user exists
-        result = user is not None
-
-    # Send the 5 latest users to the template
-    users = User.objects.order_by('-created_at')[:5]
-    return render(request, 'latest_users.html', {'users': users, 'result': result})
+class SignUpView(APIView):
+    def post(self, request):
+        data = request.data
+        try:
+            user = User.objects.create(
+                username=data['username'],
+                email=data['email'],
+                password=make_password(data['password'])
+            )
+            return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
