@@ -7,6 +7,8 @@ WORKDIR /app
 # Installation des dépendances
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install djangorestframework
+RUN pip install django-cors-headers
 
 COPY kameleon_back/ ./kameleon_back/ 
 COPY .env /app/.env
