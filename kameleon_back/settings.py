@@ -62,6 +62,29 @@ CORS_ALLOWED_ORIGINS = [
     "https://kameleon.jrcan.dev  ",
 ]
 
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.kameleonback.jrcan\.dev\/api\/[a-zA-Z0-9/_-]+$",  # Autorise tous les sous-domaines *.jrcan.dev
+]
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'x-csrftoken',
+    'authorization',
+    'accept',
+    'origin',
+    'user-agent',
+    'x-requested-with',
+]
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'OPTIONS',
+    'PATCH',
+]
+
 ROOT_URLCONF = 'kameleon_back.urls'
 
 TEMPLATES = [
