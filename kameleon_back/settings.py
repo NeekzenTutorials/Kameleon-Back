@@ -59,7 +59,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://kameleon.jrcan.dev  ",
+    "https://kameleon.jrcan.dev",
 ]
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
