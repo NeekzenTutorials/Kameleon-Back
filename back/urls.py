@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.urls import path
+from django.conf.urls.static import static
 from .views import SignUpView, LogInView, UserDetailView, UserUpdateView
 
 urlpatterns = [
@@ -6,4 +8,4 @@ urlpatterns = [
     path('api/login/', LogInView.as_view(), name='login'),
     path('api/user/', UserDetailView.as_view(), name='user-detail'),
     path('api/user/update/', UserUpdateView.as_view(), name='user-update'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
