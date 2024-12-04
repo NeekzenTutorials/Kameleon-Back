@@ -95,7 +95,7 @@ class Admin(models.Model):
     
     
 class Rank(models.Model):
-    rank_id = models.AutoField(primary_key=True, default=1)
+    rank_id = models.AutoField(primary_key=True)
     rank_name = models.CharField(max_length=50)
     rank_image = models.ImageField(upload_to="rank_images/", blank=True, null=True)
 
