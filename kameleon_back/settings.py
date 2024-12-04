@@ -60,12 +60,19 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
+CSRF_TRUSTED_ORIGINS = [
+    "https://kameleonback.jrcan.dev",
     "https://kameleon.jrcan.dev",
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "https://kameleon.jrcan.dev",
+    "https://kameleonback.jrcan.dev",
+]
+
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://.kameleonback.jrcan\.dev\/api\/[a-zA-Z0-9/_-]+$",  # Autorise tous les sous-domaines *.jrcan.dev
+    r"^https://.kameleon.jrcan\.dev\/api\/[a-zA-Z0-9/_-]+$",
+    r"^https://.kameleonback.jrcan\.dev\/api\/[a-zA-Z0-9/_-]+$",
 ]
 
 CORS_ALLOW_HEADERS = [
