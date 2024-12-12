@@ -7,7 +7,6 @@ from .models import (
     SoloRiddle,
     VersusRiddle,
     VersusRiddleImage,
-    HasImage
 )
 
 @admin.register(Rank)
@@ -57,14 +56,6 @@ class VersusRiddleImageInline(admin.TabularInline):
     readonly_fields = ()
     show_change_link = True
 
-# Inline pour les images associées via HasImage
-class HasImageInline(admin.TabularInline):
-    model = HasImage
-    extra = 1
-    fields = ('image',)
-    readonly_fields = ()
-    show_change_link = True
-
 # Configuration de l'administration pour Riddle
 @admin.register(Riddle)
 class RiddleAdmin(admin.ModelAdmin):
@@ -90,7 +81,6 @@ class RiddleAdmin(admin.ModelAdmin):
         ClueInline,
         SoloRiddleInline,
         VersusRiddleInline,
-        HasImageInline
     ]
     ordering = ('-riddle_points',)
 
@@ -127,11 +117,3 @@ class VersusRiddleImageAdmin(admin.ModelAdmin):
     search_fields = ('riddle__riddle_type', 'image_path')
     list_filter = ('riddle__riddle_type', 'image_step')
     ordering = ('riddle', 'image_step')
-
-# Configuration de l'administration pour HasImage (optionnel)
-@admin.register(HasImage)
-class HasImageAdmin(admin.ModelAdmin):
-    list_display = ('riddle', 'image')
-    search_fields = ('riddle__riddle_type', 'image__image_path')
-    list_filter = ('riddle__riddle_type',)
-    ordering = ('riddle',)
