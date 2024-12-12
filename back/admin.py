@@ -7,11 +7,12 @@ from .models import (
     SoloRiddle,
     VersusRiddle,
     VersusRiddleImage,
+    HasImage 
 )
 
 @admin.register(Rank)
 class RankAdmin(admin.ModelAdmin):
-    list_display = ('rank_name', 'rank_image')
+    list_display = ('rank_name', 'image_preview')
     search_fields = ('rank_name',) 
     list_filter = ('rank_name',)
 
@@ -22,7 +23,6 @@ class RankAdmin(admin.ModelAdmin):
     
     image_preview.short_description = 'Preview'
     
-    
 class ClueInline(admin.TabularInline):
     model = Clue
     extra = 1
@@ -30,7 +30,6 @@ class ClueInline(admin.TabularInline):
     readonly_fields = ()
     show_change_link = True
 
-# Inline pour SoloRiddle associé à une énigme
 class SoloRiddleInline(admin.StackedInline):
     model = SoloRiddle
     can_delete = False
@@ -39,7 +38,6 @@ class SoloRiddleInline(admin.StackedInline):
     fields = ('riddle_image',)
     extra = 0
 
-# Inline pour VersusRiddle associé à une énigme
 class VersusRiddleInline(admin.StackedInline):
     model = VersusRiddle
     can_delete = False
@@ -48,7 +46,6 @@ class VersusRiddleInline(admin.StackedInline):
     fields = ('versus_nb_step',)
     extra = 0
 
-# Inline pour les images d'un VersusRiddle
 class VersusRiddleImageInline(admin.TabularInline):
     model = VersusRiddleImage
     extra = 1
@@ -56,7 +53,6 @@ class VersusRiddleImageInline(admin.TabularInline):
     readonly_fields = ()
     show_change_link = True
 
-# Configuration de l'administration pour Riddle
 @admin.register(Riddle)
 class RiddleAdmin(admin.ModelAdmin):
     list_display = (
@@ -84,7 +80,6 @@ class RiddleAdmin(admin.ModelAdmin):
     ]
     ordering = ('-riddle_points',)
 
-# Configuration de l'administration pour Clue (optionnel si vous souhaitez les gérer séparément)
 @admin.register(Clue)
 class ClueAdmin(admin.ModelAdmin):
     list_display = ('clue_id', 'riddle', 'clue_text')
@@ -92,7 +87,6 @@ class ClueAdmin(admin.ModelAdmin):
     list_filter = ('riddle',)
     ordering = ('riddle',)
 
-# Configuration de l'administration pour SoloRiddle
 @admin.register(SoloRiddle)
 class SoloRiddleAdmin(admin.ModelAdmin):
     list_display = ('riddle', 'riddle_image')
@@ -100,7 +94,6 @@ class SoloRiddleAdmin(admin.ModelAdmin):
     list_filter = ('riddle__riddle_type', 'riddle__riddle_theme')
     ordering = ('riddle',)
 
-# Configuration de l'administration pour VersusRiddle
 @admin.register(VersusRiddle)
 class VersusRiddleAdmin(admin.ModelAdmin):
     list_display = ('riddle', 'versus_nb_step')
@@ -109,10 +102,20 @@ class VersusRiddleAdmin(admin.ModelAdmin):
     ordering = ('riddle',)
     inlines = [VersusRiddleImageInline]
 
-# Configuration de l'administration pour VersusRiddleImage
 @admin.register(VersusRiddleImage)
 class VersusRiddleImageAdmin(admin.ModelAdmin):
-    list_display = ('image_id', 'riddle', 'image_step', 'image_path')
-    search_fields = ('riddle__riddle_type', 'image_path')
-    list_filter = ('riddle__riddle_type', 'image_step')
+    list_display = ('image_id', 'get_riddle_type', 'image_step', 'image_path')
+    search_fields = ('riddle__riddle__riddle_type', 'image_path')
+    list_filter = ('riddle__riddle__riddle_type', 'image_step')
     ordering = ('riddle', 'image_step')
+
+    def get_riddle_type(self, obj):
+        return obj.riddle.riddle.riddle_type
+    get_riddle_type.short_description = 'Riddle Type'
+    
+@admin.register(HasImage)
+class HasImageAdmin(admin.ModelAdmin):
+    list_display = ('riddle', 'image')
+    search_fields = ('riddle__riddle_type', 'image__image_path')
+    list_filter = ('riddle__riddle_type',)
+    ordering = ('riddle',)
