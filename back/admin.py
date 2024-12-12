@@ -67,7 +67,8 @@ class RiddleAdmin(admin.ModelAdmin):
         'riddle_type',
         'riddle_variable',
         'riddle_response',
-        'riddle_theme'
+        'riddle_theme',
+        'riddle_path'
     )
     list_filter = (
         'riddle_type',
@@ -80,6 +81,15 @@ class RiddleAdmin(admin.ModelAdmin):
         VersusRiddleInline,
     ]
     ordering = ('-riddle_points',)
+    fields = (
+        'riddle_type',
+        'riddle_variable',
+        'riddle_response',
+        'riddle_difficulty',
+        'riddle_theme',
+        'riddle_points',
+        'riddle_path' 
+    )
 
 @admin.register(Clue)
 class ClueAdmin(admin.ModelAdmin):
