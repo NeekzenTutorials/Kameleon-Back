@@ -114,7 +114,7 @@ class Riddle(models.Model):
     riddle_difficulty = models.IntegerField()
     riddle_theme = models.CharField(max_length=100)
     riddle_points = models.IntegerField()
-    riddle_path = models.TextField(verbose_name="Chemin de l'énigme")
+    riddle_path = models.TextField(verbose_name="Chemin de l'énigme", blank=True, null=True)
 
     def __str__(self):
         return f"Riddle {self.riddle_id} ({self.riddle_theme})"
