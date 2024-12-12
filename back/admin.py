@@ -99,7 +99,6 @@ class SoloRiddleAdmin(admin.ModelAdmin):
     search_fields = ('riddle__riddle_type', 'riddle__riddle_theme')
     list_filter = ('riddle__riddle_type', 'riddle__riddle_theme')
     ordering = ('riddle',)
-    inlines = [HasImageInline]
 
 # Configuration de l'administration pour VersusRiddle
 @admin.register(VersusRiddle)
