@@ -61,7 +61,8 @@ class RiddleAdmin(admin.ModelAdmin):
         'riddle_theme',
         'riddle_difficulty',
         'riddle_points',
-        'riddle_path'
+        'riddle_path',
+        'display_dependencies'
     )
     search_fields = (
         'riddle_type',
@@ -88,8 +89,16 @@ class RiddleAdmin(admin.ModelAdmin):
         'riddle_difficulty',
         'riddle_theme',
         'riddle_points',
-        'riddle_path' 
+        'riddle_path',
+        'riddle_dependance' 
     )
+    
+    def display_dependencies(self, obj):
+        dependencies = obj.riddle_dependance.all()
+        if dependencies:
+            return ", ".join([str(riddle) for riddle in dependencies])
+        return "Aucune dépendance"
+    display_dependencies.short_description = 'Dépendances de l\'énigme'
 
 @admin.register(Clue)
 class ClueAdmin(admin.ModelAdmin):
