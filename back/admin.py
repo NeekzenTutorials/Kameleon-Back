@@ -60,7 +60,8 @@ class RiddleAdmin(admin.ModelAdmin):
         'riddle_type',
         'riddle_theme',
         'riddle_difficulty',
-        'riddle_points'
+        'riddle_points',
+        'riddle_path'
     )
     search_fields = (
         'riddle_type',
@@ -112,7 +113,7 @@ class VersusRiddleImageAdmin(admin.ModelAdmin):
     def get_riddle_type(self, obj):
         return obj.riddle.riddle.riddle_type
     get_riddle_type.short_description = 'Riddle Type'
-    
+
 @admin.register(HasImage)
 class HasImageAdmin(admin.ModelAdmin):
     list_display = ('riddle', 'image')

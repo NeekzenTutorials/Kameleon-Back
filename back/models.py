@@ -113,7 +113,8 @@ class Riddle(models.Model):
     riddle_response = models.TextField()
     riddle_difficulty = models.IntegerField()
     riddle_theme = models.CharField(max_length=100)
-    riddle_points = models.IntegerField()
+    riddle_points = models.IntegerField(),
+    riddle_path = models.CharField(max_length=50)
 
     def __str__(self):
         return f"Riddle {self.riddle_id} ({self.riddle_theme})"
