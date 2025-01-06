@@ -30,22 +30,19 @@ class ClueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Clue
         fields = ['clue_id', 'clue_text']
-
-class SoloRiddleSerializer(serializers.ModelSerializer):
-    riddle_image = serializers.ImageField(required=False)
-
+        
+class RiddleDependencySerializer(serializers.ModelSerializer):
     class Meta:
-        model = SoloRiddle
-        fields = ['riddle_image']
+        model = Riddle
+        fields = [
+            'riddle_id',
+            'riddle_theme',
+            'riddle_points',
+        ]
 
 class RiddleSerializer(serializers.ModelSerializer):
     clues = ClueSerializer(many=True, read_only=True, source='clue_set')
-    solo_riddle = SoloRiddleSerializer(read_only=True)
-    dependance = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Riddle.objects.all(),
-        required=False
-    )
+    dependance = RiddleDependencySerializer(many=True, read_only=True, source='riddle_dependance')
 
     class Meta:
         model = Riddle
@@ -60,5 +57,4 @@ class RiddleSerializer(serializers.ModelSerializer):
             'riddle_path',
             'dependance',
             'clues',
-            'solo_riddle',
         ]
