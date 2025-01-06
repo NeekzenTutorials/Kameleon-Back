@@ -107,6 +107,12 @@ class Rank(models.Model):
 # region Riddle
 
 class Riddle(models.Model):
+    
+    RIDDLE_MODE_CHOICES = [
+        ('solo', 'Solo'),
+        ('versus', 'Versus'),
+    ]
+    
     riddle_id = models.AutoField(primary_key=True)
     riddle_type = models.CharField(max_length=50)
     riddle_variable = models.TextField()
@@ -121,6 +127,11 @@ class Riddle(models.Model):
         symmetrical=False,
         related_name='dependent_riddles',
         verbose_name="Dépendances de l'énigme"
+    )
+    riddle_mode = models.CharField(
+        max_length=10,
+        choices=RIDDLE_MODE_CHOICES,
+        default='solo',
     )
 
     def __str__(self):

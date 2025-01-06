@@ -62,7 +62,8 @@ class RiddleAdmin(admin.ModelAdmin):
         'riddle_difficulty',
         'riddle_points',
         'riddle_path',
-        'display_dependencies'
+        'display_dependencies',
+        'riddle_mode'
     )
     search_fields = (
         'riddle_type',
@@ -90,7 +91,8 @@ class RiddleAdmin(admin.ModelAdmin):
         'riddle_theme',
         'riddle_points',
         'riddle_path',
-        'riddle_dependance' 
+        'riddle_dependance' ,
+        'riddle_mode'
     )
     
     def display_dependencies(self, obj):
