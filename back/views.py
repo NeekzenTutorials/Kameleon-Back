@@ -8,6 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth.hashers import make_password
 from .models import User, Riddle, Member
 from django.contrib.auth import authenticate
+from django.shortcuts import get_object_or_404
 from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer
 
 
@@ -76,11 +77,9 @@ class MemberDetailView(APIView):
 class MemberRiddlesView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, member_id):
-        try:
-            member = Member.objects.get(pk=member_id, user=request.user)
-        except Member.DoesNotExist:
-            return Response({"detail": "Member not found."}, status=404)
+    def get(self, request, username):
+        user = get_object_or_404(User, username=username)
+        member = get_object_or_404(Member, user=user)
 
         achieved_riddles = SimpleRiddleSerializer(member.achieved_riddles.all(), many=True).data
         locked_riddles = SimpleRiddleSerializer(member.locked_riddles.all(), many=True).data
