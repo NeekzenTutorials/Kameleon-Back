@@ -44,6 +44,7 @@ class MemberAdmin(admin.ModelAdmin):
     list_display = ('user', 'member_score', 'member_clan_score')
     search_fields = ('user__username',)
     list_filter = ('member_score',)
+    filter_horizontal = ('achieved_riddles', 'locked_riddles')
     
 admin.site.register(Member, MemberAdmin)
 

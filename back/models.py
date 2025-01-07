@@ -72,6 +72,19 @@ class Member(models.Model):
     member_score = models.FloatField(default=0.0)
     member_clan_score = models.FloatField(default=0.0)
     
+    achieved_riddles = models.ManyToManyField(
+        'Riddle',
+        blank=True,
+        related_name='achieved_by_members',
+        verbose_name="Énigmes réussies"
+    )
+    locked_riddles = models.ManyToManyField(
+        'Riddle',
+        blank=True,
+        related_name='locked_by_members',
+        verbose_name="Énigmes verrouillées"
+    )
+    
     def __str__(self):
         return f"{self.user.username} - Score: {self.member_score}"
     
