@@ -88,6 +88,17 @@ class Member(models.Model):
     def __str__(self):
         return f"{self.user.username} - Score: {self.member_score}"
     
+    def add_riddle_to_achieved(self, riddle):
+        """Ajoute une énigme à la liste des énigmes réussies."""
+        if riddle in self.locked_riddles.all():
+            self.locked_riddles.remove(riddle)
+        self.achieved_riddles.add(riddle)
+
+    def lock_riddle(self, riddle):
+        """Ajoute une énigme à la liste des énigmes verrouillées."""
+        if riddle not in self.achieved_riddles.all():
+            self.locked_riddles.add(riddle)
+    
     
 class Recruiter(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
