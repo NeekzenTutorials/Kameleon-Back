@@ -37,6 +37,8 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
     
+    filter_horizontal = ()
+    
 admin.site.register(User, UserAdmin)
     
 class MemberAdmin(admin.ModelAdmin):
