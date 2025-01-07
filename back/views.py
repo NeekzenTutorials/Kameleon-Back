@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth.hashers import make_password
-from .models import User, Riddle
+from .models import User, Riddle, Member
 from django.contrib.auth import authenticate
-from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer
+from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer
 
 
 class SignUpView(APIView):
@@ -72,6 +72,23 @@ class MemberDetailView(APIView):
         member = request.user.member
         serializer = MemberSerializer(member)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class MemberRiddlesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, member_id):
+        try:
+            member = Member.objects.get(pk=member_id, user=request.user)
+        except Member.DoesNotExist:
+            return Response({"detail": "Member not found."}, status=404)
+
+        achieved_riddles = SimpleRiddleSerializer(member.achieved_riddles.all(), many=True).data
+        locked_riddles = SimpleRiddleSerializer(member.locked_riddles.all(), many=True).data
+
+        return Response({
+            "achievedRiddles": achieved_riddles,
+            "lockedRiddles": locked_riddles
+        })
     
 class RiddleListView(generics.ListAPIView):
     """

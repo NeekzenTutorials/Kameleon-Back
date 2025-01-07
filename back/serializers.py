@@ -46,6 +46,11 @@ class ClueSerializer(serializers.ModelSerializer):
         model = Clue
         fields = ['clue_id', 'clue_text']
         
+class SimpleRiddleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Riddle
+        fields = ['riddle_id', 'riddle_type', 'riddle_theme', 'riddle_difficulty']
+        
 class RiddleDependencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Riddle
