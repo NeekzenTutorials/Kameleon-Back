@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Riddle, Clue, SoloRiddle
+from .models import User, Riddle, Clue, Member
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,6 +25,21 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'profile_picture']
+        
+class MemberSerializer(serializers.ModelSerializer):
+    achieved_riddles = serializers.PrimaryKeyRelatedField(
+        many=True, 
+        queryset=Riddle.objects.all()
+    )
+    locked_riddles = serializers.PrimaryKeyRelatedField(
+        many=True, 
+        queryset=Riddle.objects.all()
+    )
+    
+    class Meta:
+        model = Member
+        fields = ['user', 'member_score', 'member_clan_score', 'achieved_riddles', 'locked_riddles']
+        read_only_fields = ['user']
         
 class ClueSerializer(serializers.ModelSerializer):
     class Meta:

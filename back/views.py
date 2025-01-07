@@ -8,7 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth.hashers import make_password
 from .models import User, Riddle
 from django.contrib.auth import authenticate
-from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer
+from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer
 
 
 class SignUpView(APIView):
@@ -64,6 +64,14 @@ class UserUpdateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class MemberDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        member = request.user.member
+        serializer = MemberSerializer(member)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 class RiddleListView(generics.ListAPIView):
     """
