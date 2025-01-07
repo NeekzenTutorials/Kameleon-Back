@@ -17,15 +17,12 @@ admin.site.site_header = "Administration de Kameleon"
 admin.site.site_title = "Panneau Admin"
 admin.site.index_title = "Bienvenue dans le panneau d'administration"
 
-@admin.site.register(User)
 class UserAdmin(BaseUserAdmin):
-    # Champs affichés dans la liste des utilisateurs
     list_display = ('username', 'email', 'is_active', 'is_staff', 'is_superuser', 'created_at', 'last_connection')
     list_filter = ('is_active', 'is_staff', 'is_superuser', 'created_at')
     search_fields = ('username', 'email')
     ordering = ('username',)
     
-    # Champs dans le formulaire de modification d'un utilisateur
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password')}),
         ('Personal Info', {'fields': ('profile_picture', 'rank', 'cv')}),
@@ -33,7 +30,6 @@ class UserAdmin(BaseUserAdmin):
         ('Important dates', {'fields': ('last_connection', 'created_at')}),
     )
     
-    # Champs dans le formulaire de création d'un utilisateur
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -41,11 +37,14 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
     
-@admin.register(Member)
+admin.site.register(User, UserAdmin)
+    
 class MemberAdmin(admin.ModelAdmin):
     list_display = ('user', 'member_score', 'member_clan_score')
     search_fields = ('user__username',)
     list_filter = ('member_score',)
+    
+admin.site.register(Member, MemberAdmin)
 
 @admin.register(Rank)
 class RankAdmin(admin.ModelAdmin):
