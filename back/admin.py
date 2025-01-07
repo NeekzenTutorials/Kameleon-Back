@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import (
+    User,
+    Member,
     Rank,
     Riddle,
     Clue,
@@ -9,6 +12,40 @@ from .models import (
     VersusRiddleImage,
     HasImage 
 )
+
+admin.site.site_header = "Administration de Kameleon"
+admin.site.site_title = "Panneau Admin"
+admin.site.index_title = "Bienvenue dans le panneau d'administration"
+
+@admin.site.register(User)
+class UserAdmin(BaseUserAdmin):
+    # Champs affichés dans la liste des utilisateurs
+    list_display = ('username', 'email', 'is_active', 'is_staff', 'is_superuser', 'created_at', 'last_connection')
+    list_filter = ('is_active', 'is_staff', 'is_superuser', 'created_at')
+    search_fields = ('username', 'email')
+    ordering = ('username',)
+    
+    # Champs dans le formulaire de modification d'un utilisateur
+    fieldsets = (
+        (None, {'fields': ('username', 'email', 'password')}),
+        ('Personal Info', {'fields': ('profile_picture', 'rank', 'cv')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+        ('Important dates', {'fields': ('last_connection', 'created_at')}),
+    )
+    
+    # Champs dans le formulaire de création d'un utilisateur
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2', 'is_active', 'is_staff', 'is_superuser'),
+        }),
+    )
+    
+@admin.register(Member)
+class MemberAdmin(admin.ModelAdmin):
+    list_display = ('user', 'member_score', 'member_clan_score')
+    search_fields = ('user__username',)
+    list_filter = ('member_score',)
 
 @admin.register(Rank)
 class RankAdmin(admin.ModelAdmin):
