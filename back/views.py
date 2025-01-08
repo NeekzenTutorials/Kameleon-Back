@@ -140,6 +140,8 @@ class IsRiddleSolved(APIView):
         return Response({'is_solved': False, 'message': 'Incorrect answer'}, status=status.HTTP_200_OK)
     
 class GetClue(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def post(self, request):
         user = request.user
         riddle_id = request.data.get('riddle_id')
