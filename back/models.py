@@ -84,6 +84,13 @@ class Member(models.Model):
         related_name='locked_by_members',
         verbose_name="Énigmes verrouillées"
     )
+
+    revealed_clues = models.ManyToManyField(
+        'Clue',
+        blank=True,
+        related_name='revealed_by_members',
+        verbose_name="Indices utilisés"
+    )
     
     def __str__(self):
         return f"{self.user.username} - Score: {self.member_score}"

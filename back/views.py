@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth.hashers import make_password
-from .models import User, Riddle, Member
+from .models import User, Riddle, Member, Clue
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer
@@ -138,3 +138,30 @@ class IsRiddleSolved(APIView):
 
         # If the response is incorrect
         return Response({'is_solved': False, 'message': 'Incorrect answer'}, status=status.HTTP_200_OK)
+    
+class GetClue(APIView):
+    def post(self, request):
+        user = request.user
+        riddle_id = request.data.get('riddle_id')
+        hint_number = request.data.get('hint_number')
+
+        try:
+            riddle = Riddle.objects.get(riddle_id=riddle_id)
+        except Riddle.DoesNotExist:
+            return Response({'error': 'Riddle not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if clue exists
+        clue = Clue.objects.filter(riddle=riddle).order_by('clue_id')[hint_number - 1] if hint_number in [1, 2, 3] else None
+
+        if not clue:
+            return Response({'error': 'Invalid clue number.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if the user has already used this hint
+        member = user.member
+        if clue in member.revealed_clues.all():
+            return Response({'hint': clue.clue_text}, status=status.HTTP_200_OK)
+
+        # Save the clue in the member's revealed clues
+        member.revealed_clues.add(clue)
+
+        return Response({'hint': clue.clue_text}, status=status.HTTP_200_OK)
