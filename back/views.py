@@ -6,10 +6,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth.hashers import make_password
-from .models import User, Riddle, Member, Clue
 from django.contrib.auth import authenticate
+from django.contrib.auth.tokens import default_token_generator
+from django.conf import settings
+from django.urls import reverse
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer
+from .models import User, Riddle, Member, Clue
 
 
 class SignUpView(APIView):
@@ -19,11 +23,35 @@ class SignUpView(APIView):
             user = User.objects.create(
                 username=data['username'],
                 email=data['email'],
-                password=make_password(data['password'])
+                password=make_password(data['password']),
+                is_active=False
             )
+
+            token = default_token_generator.make_token(user)
+            activation_link = f"{settings.BACKEND_URL}/activate/{user.id}/{token}"
+
+            send_mail(
+                subject='Activate Your Account',
+                message=f"Hi {user.username},\n\nClick the link below to activate your account:\n{activation_link}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[data['email']],
+                fail_silently=False,
+            )
+
             return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+class ActivateAccountView(APIView):
+    def get(self, request, user_id, token):
+        user = get_object_or_404(User, id=user_id)
+        
+        if default_token_generator.check_token(user, token):
+            user.is_active = True  # Activate account
+            user.save()
+            return Response({'message': 'Account activated successfully.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
         
 class LogInView(APIView):
     def post(self, request):
