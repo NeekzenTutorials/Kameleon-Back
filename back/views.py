@@ -21,21 +21,6 @@ import requests
 class SignUpView(APIView):
     def post(self, request):
         data = request.data
-        captcha_token = data.get('captchaToken')
-
-        secret_key = settings.RECAPTCHA_SECRET_KEY
-        response = requests.post(
-            'https://www.google.com/recaptcha/api/siteverify',
-            data={
-                'secret': secret_key,
-                'response': captcha_token,
-            }
-        )
-        captcha_result = response.json()
-
-        if not captcha_result.get('success'):
-            return Response({'error': 'Captcha validation failed.'}, status=status.HTTP_400_BAD_REQUEST)
-        
         try:
 
             # Check email format
