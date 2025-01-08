@@ -96,7 +96,7 @@ class Member(models.Model):
         return f"{self.user.username} - Score: {self.member_score}"
     
     def add_riddle_to_achieved(self, riddle):
-        """Ajoute une énigme à la liste des énigmes réussies."""
+        """Add a riddle to the list of achieved riddles."""
         self.achieved_riddles.add(riddle)
 
         all_riddles = Riddle.objects.all()
@@ -105,11 +105,25 @@ class Member(models.Model):
                 if other_riddle in self.locked_riddles.all():
                     self.locked_riddles.remove(other_riddle)
 
-        self.member_score += riddle.riddle_points
+        riddle_clues = Clue.objects.filter(riddle=riddle) # Get all clues of the riddle
+        revealed_riddle_clues = self.revealed_clues.filter(riddle__in=riddle_clues)
+        revealed_clues_count = revealed_riddle_clues.count()
+
+        # Calculate the percentage of points to add depending on the number of revealed clues
+        if revealed_clues_count == 1:
+            percentage = 0.75
+        elif revealed_clues_count == 2:
+            percentage = 0.5
+        elif revealed_clues_count == 3:
+            percentage = 0.25
+        else:
+            percentage = 1.0
+
+        self.member_score += riddle.riddle_points * percentage
         self.save()
 
     def lock_riddle(self, riddle):
-        """Ajoute une énigme à la liste des énigmes verrouillées."""
+        """Add a riddle to the list of locked riddles."""
         if riddle not in self.achieved_riddles.all():
             self.locked_riddles.add(riddle)
     
