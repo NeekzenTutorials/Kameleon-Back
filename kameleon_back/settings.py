@@ -44,6 +44,9 @@ EMAIL_HOST_PASSWORD = env('EMAIL_PASSWORD')
 DEFAULT_FROM_EMAIL = env('EMAIL_USER')
 BACKEND_URL = 'https://kameleonback.jrcan.dev'
 
+# CAPTCHA Settings
+RECAPTCHA_SECRET_KEY = env('RECAPTCHA_SECRET_KEY')
+
 # Application definition
 
 INSTALLED_APPS = [
