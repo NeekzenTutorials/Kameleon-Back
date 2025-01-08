@@ -106,7 +106,8 @@ class Member(models.Model):
                     self.locked_riddles.remove(other_riddle)
 
         riddle_clues = Clue.objects.filter(riddle=riddle) # Get all clues of the riddle
-        revealed_riddle_clues = self.revealed_clues.filter(riddle__in=riddle_clues)
+        riddle_ids = riddle_clues.values_list('riddle_id', flat=True)
+        revealed_riddle_clues = self.revealed_clues.filter(riddle__in=riddle_ids)
         revealed_clues_count = revealed_riddle_clues.count()
 
         # Calculate the percentage of points to add depending on the number of revealed clues
