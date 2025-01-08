@@ -9,8 +9,9 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
-from django.urls import reverse
 from django.core.mail import send_mail
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer
 from .models import User, Riddle, Member, Clue
@@ -20,12 +21,21 @@ class SignUpView(APIView):
     def post(self, request):
         data = request.data
         try:
+
+            # Check email format
+            email = data.get('email')
+            try:
+                validate_email(email)
+            except ValidationError:
+                return Response({'error': 'Invalid email format'}, status=status.HTTP_400_BAD_REQUEST)
+            
             user = User.objects.create(
                 username=data['username'],
-                email=data['email'],
+                email=email,
                 password=make_password(data['password']),
                 is_active=False
             )
+            
 
             token = default_token_generator.make_token(user)
             activation_link = f"{settings.BACKEND_URL}/activate/{user.id}/{token}"
