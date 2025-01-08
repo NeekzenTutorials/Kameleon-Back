@@ -114,6 +114,7 @@ class IsRiddleSolved(APIView):
     def post(self, request):
         data = request.data
         user = request.user
+        member = user.member
 
         riddle_id = data.get('riddle_id')
         user_response = data.get('response')
@@ -125,14 +126,13 @@ class IsRiddleSolved(APIView):
             return Response({'error': 'Riddle not found'}, status=status.HTTP_404_NOT_FOUND)
 
         # If user already solved the riddle
-        user_solved_riddles = user.solved_riddles.all()
-        if riddle in user_solved_riddles:
+        member_achieved_riddles = member.achieved_riddles.all()
+        if riddle in member_achieved_riddles:
             return Response({'is_solved': True, 'message': 'Riddle already solved'}, status=status.HTTP_200_OK)
 
         # Check if the response is correct
         if user_response == riddle.riddle_response:
             # Add the riddle to the user's solved riddles
-            member = user.member
             member.add_riddle_to_achieved(riddle)
             return Response({'is_solved': True, 'message': 'Correct answer!'}, status=status.HTTP_200_OK)
 
