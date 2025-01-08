@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.urls import path
 from django.conf.urls.static import static
-from .views import SignUpView, LogInView, UserDetailView, UserUpdateView, RiddleListView, RiddleDetailView, MemberDetailView, MemberRiddlesView
+from .views import SignUpView, LogInView, UserDetailView, UserUpdateView, RiddleListView, RiddleDetailView, MemberDetailView, MemberRiddlesView, IsRiddleSolved
 
 urlpatterns = [
     path('api/signup/', SignUpView.as_view(), name='signup'),
@@ -12,4 +12,5 @@ urlpatterns = [
     path('api/user/update/', UserUpdateView.as_view(), name='user-update'),
     path('api/riddles/', RiddleListView.as_view(), name='riddle-list'),
     path('api/riddles/<int:riddle_id>/', RiddleDetailView.as_view(), name='riddle-detail'),
+    path('api/riddles/solve/', IsRiddleSolved.as_view(), name='is-riddle-solved'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -90,9 +90,13 @@ class Member(models.Model):
     
     def add_riddle_to_achieved(self, riddle):
         """Ajoute une énigme à la liste des énigmes réussies."""
-        if riddle in self.locked_riddles.all():
-            self.locked_riddles.remove(riddle)
         self.achieved_riddles.add(riddle)
+
+        all_riddles = Riddle.objects.all()
+        for other_riddle in all_riddles:
+            if riddle in other_riddle.riddle_dependance.all():
+                if other_riddle in self.locked_riddles.all():
+                    self.locked_riddles.remove(other_riddle)
 
     def lock_riddle(self, riddle):
         """Ajoute une énigme à la liste des énigmes verrouillées."""

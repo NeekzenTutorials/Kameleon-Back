@@ -105,3 +105,36 @@ class RiddleDetailView(generics.RetrieveAPIView):
     serializer_class = RiddleSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'riddle_id'
+
+# Gameplay views
+
+class IsRiddleSolved(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = request.data
+        user = request.user
+
+        riddle_id = data.get('riddle_id')
+        user_response = data.get('response')
+
+        # If riddle_id doesn't exist
+        try:
+            riddle = Riddle.objects.get(riddle_id=riddle_id)
+        except Riddle.DoesNotExist:
+            return Response({'error': 'Riddle not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # If user already solved the riddle
+        user_solved_riddles = user.solved_riddles.all()
+        if riddle in user_solved_riddles:
+            return Response({'is_solved': True, 'message': 'Riddle already solved'}, status=status.HTTP_200_OK)
+
+        # Check if the response is correct
+        if user_response == riddle.riddle_response:
+            # Add the riddle to the user's solved riddles
+            member = user.member
+            member.add_riddle_to_achieved(riddle)
+            return Response({'is_solved': True, 'message': 'Correct answer!'}, status=status.HTTP_200_OK)
+
+        # If the response is incorrect
+        return Response({'is_solved': False, 'message': 'Incorrect answer'}, status=status.HTTP_200_OK)
