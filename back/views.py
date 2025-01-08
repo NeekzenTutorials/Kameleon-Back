@@ -143,7 +143,7 @@ class GetClue(APIView):
     def post(self, request):
         user = request.user
         riddle_id = request.data.get('riddle_id')
-        hint_number = request.data.get('hint_number')
+        clue_number = request.data.get('clue')
 
         try:
             riddle = Riddle.objects.get(riddle_id=riddle_id)
@@ -151,7 +151,7 @@ class GetClue(APIView):
             return Response({'error': 'Riddle not found'}, status=status.HTTP_404_NOT_FOUND)
 
         # Check if clue exists
-        clue = Clue.objects.filter(riddle=riddle).order_by('clue_id')[hint_number - 1] if hint_number in [1, 2, 3] else None
+        clue = Clue.objects.filter(riddle=riddle).order_by('clue_id')[clue_number - 1] if clue_number in [1, 2, 3] else None
 
         if not clue:
             return Response({'error': 'Invalid clue number.'}, status=status.HTTP_400_BAD_REQUEST)
