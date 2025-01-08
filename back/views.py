@@ -63,8 +63,11 @@ class LogInView(APIView):
         user = authenticate(username=username, password=password)
 
         if user is not None:
-            # Générer un token JWT
-            refresh = RefreshToken.for_user(user)
+            if not user.is_active:
+                return Response({'error': 'Account is not active. Please verify your email to activate your account.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            refresh = RefreshToken.for_user(user) # Generate authentification token
             return Response({
                 'message': 'User logged in successfully',
                 'refresh': str(refresh),
