@@ -98,6 +98,9 @@ class Member(models.Model):
                 if other_riddle in self.locked_riddles.all():
                     self.locked_riddles.remove(other_riddle)
 
+        self.member_score += riddle.riddle_points
+        self.save()
+
     def lock_riddle(self, riddle):
         """Ajoute une énigme à la liste des énigmes verrouillées."""
         if riddle not in self.achieved_riddles.all():
