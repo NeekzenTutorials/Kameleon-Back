@@ -37,6 +37,7 @@ services:
       - traefik.http.routers.${NAME}.rule=Host(`${NAME}.jrcan.dev`)
       - traefik.http.routers.${NAME}.tls=true
       - traefik.http.routers.${NAME}.tls.certresolver=myresolver
+      - traefik.http.routers.${NAME}.middlewares=ws-headers
       - traefik.http.services.${NAME}.loadbalancer.server.port=8000
       - traefik.http.middlewares.${NAME}-ws.headers.customrequestheaders.X-Forwarded-Proto=https
 

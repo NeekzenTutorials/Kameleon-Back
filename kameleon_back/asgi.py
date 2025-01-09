@@ -12,7 +12,7 @@ from channels.routing import ProtocolTypeRouter
 
 from django.core.asgi import get_asgi_application, URLRouter
 from channels.auth import AuthMiddlewareStack
-from kameleon_back.routing import websocket_urlpatterns
+from routing import websocket_urlpatterns
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kameleon_back.settings')
 
