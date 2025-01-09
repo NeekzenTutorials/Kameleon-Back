@@ -8,8 +8,8 @@ https://docs.djangoproject.com/en/5.1/howto/deployment/asgi/
 """
 
 import os
-from channels.routing import ProtocolTypeRouter
-from django.core.asgi import get_asgi_application, URLRouter
+from channels.routing import ProtocolTypeRouter, URLRouter
+from django.core.asgi import get_asgi_application
 from channels.auth import AuthMiddlewareStack
 from back.consumers import ChatConsumer
 from django.urls import path

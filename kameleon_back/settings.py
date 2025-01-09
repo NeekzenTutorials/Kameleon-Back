@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-2x-6129m8_tcdanxhk3hkb^@dggzg^&d2@wq(7%o-2$z11-l$w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['kameleonback.jrcan.dev', 'kameleon.jrcan.dev']
+ALLOWED_HOSTS = ['kameleonback.jrcan.dev', 'kameleon.jrcan.dev', 'localhost', '127.0.0.1']
 
 # SMTP / EMAIL Settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -73,11 +73,15 @@ MIDDLEWARE = [
 CSRF_TRUSTED_ORIGINS = [
     "https://kameleonback.jrcan.dev",
     "https://kameleon.jrcan.dev",
+    "http://localhost:8080",  # si votre front Vue tourne sur le port 8080
+    "http://127.0.0.1:8080",
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "https://kameleon.jrcan.dev",
     "https://kameleonback.jrcan.dev",
+    "http://localhost:8080",  # si votre front Vue tourne sur le port 8080
+    "http://127.0.0.1:8080",
 ]
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
