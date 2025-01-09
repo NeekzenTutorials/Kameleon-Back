@@ -31,11 +31,17 @@ services:
       python manage.py runserver 0.0.0.0:8000
       "
     labels:
-      - traefik.enable=true
+       - traefik.enable=true
       - traefik.http.routers.${NAME}.entryPoints=websecure
       - traefik.http.routers.${NAME}.rule=Host(`${NAME}.jrcan.dev`)
       - traefik.http.routers.${NAME}.tls=true
       - traefik.http.routers.${NAME}.tls.certresolver=myresolver
+      - traefik.http.services.${NAME}.loadbalancer.server.port=8000
+      - traefik.http.middlewares.${NAME}-ws.headers.customrequestheaders.X-Forwarded-Proto=https
+      - traefik.http.routers.${NAME}-ws.entryPoints=websecure
+      - traefik.http.routers.${NAME}-ws.rule=Host(`${NAME}.jrcan.dev`) && PathPrefix(`/ws`)
+      - traefik.http.routers.${NAME}-ws.service=${NAME}
+      - traefik.http.middlewares.${NAME}-ws.headers.customrequestheaders.X-Forwarded-Proto=https
 
   db:
     image: postgres:latest
