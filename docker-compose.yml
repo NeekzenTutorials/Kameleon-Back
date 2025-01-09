@@ -32,15 +32,23 @@ services:
       "
     labels:
       - traefik.enable=true
-      - traefik.http.routers.${NAME}.entryPoints=websecure
-      - traefik.http.routers.${NAME}.rule=Host(`${NAME}.jrcan.dev`)
-      - traefik.http.routers.${NAME}.tls=true
-      - traefik.http.routers.${NAME}.tls.certresolver=myresolver
-      - traefik.http.services.${NAME}.loadbalancer.server.port=8000
-      - traefik.http.routers.${NAME}-ws.entryPoints=websecure
-      - traefik.http.routers.${NAME}-ws.rule=Host(`${NAME}.jrcan.dev`) && PathPrefix(`/ws`)
-      - traefik.http.routers.${NAME}-ws.service=${NAME}
-      - traefik.http.middlewares.${NAME}-ws.headers.customrequestheaders.X-Forwarded-Proto=https
+
+      # Route "HTTP normal" sur le host kameleonback.jrcan.dev
+      - traefik.http.routers.kameleonback.entryPoints=websecure
+      - traefik.http.routers.kameleonback.rule=Host(`kameleonback.jrcan.dev`)
+      - traefik.http.routers.kameleonback.tls=true
+      - traefik.http.routers.kameleonback.tls.certresolver=myresolver
+      - traefik.http.services.kameleonback.loadbalancer.server.port=8000
+
+      # Route WebSocket
+      - traefik.http.routers.kameleonback-ws.entryPoints=websecure
+      - traefik.http.routers.kameleonback-ws.rule=Host(`kameleonback.jrcan.dev`) && PathPrefix(`/ws`)
+      - traefik.http.routers.kameleonback-ws.service=kameleonback
+      - traefik.http.routers.kameleonback.priority=1
+      - traefik.http.routers.kameleonback-ws.priority=2
+
+      # (Optionnel) Pour forcer le header X-Forwarded-Proto
+      - traefik.http.middlewares.kameleonback-ws.headers.customrequestheaders.X-Forwarded-Proto=https
 
   db:
     image: postgres:latest
