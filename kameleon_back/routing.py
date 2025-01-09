@@ -1,6 +1,6 @@
-from django.urls import re_path
+from django.urls import path
 from back.consumers import RiddleConsumer
 
 websocket_urlpatterns = [
-    re_path(r'ws/riddles/(?P<riddle_id>\d+)/$', RiddleConsumer.as_asgi()),
+    path('ws/riddles/<int:riddle_id>/', RiddleConsumer.as_asgi(), name='riddle-consumer'),
 ]
