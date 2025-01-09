@@ -50,5 +50,11 @@ services:
     networks:
       - lan
 
+  redis:
+    image: redis:alpine
+    restart: always
+    networks:
+      - lan
+
 volumes:
   postgres_data:

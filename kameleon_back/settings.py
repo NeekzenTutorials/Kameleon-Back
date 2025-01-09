@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'channels',
     'back',
 ]
 
@@ -136,6 +137,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'kameleon_back.wsgi.application'
+ASGI_APPLICATION = 'kameleon_back.asgi.application'
 
 
 # Database
@@ -150,6 +152,15 @@ DATABASES = {
         'HOST': env('DB_HOST', default='db'),      # Host PostgreSQL
         'PORT': env('DB_PORT', default='5432'),           # Port PostgreSQL
     }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
+    },
 }
 
 
