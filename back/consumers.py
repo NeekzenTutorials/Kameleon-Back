@@ -9,12 +9,14 @@ import json
 class RiddleConsumer(AsyncWebsocketConsumer):
     
     async def connect(self):
+        print(f"Attempting to connect to riddle {self.scope['url_route']['kwargs']['riddle_id']}")
         # Récupérer le nom de la salle à partir de l'URL
         self.riddle_id = self.scope['url_route']['kwargs']['riddle_id']
         self.room_group_name = f"riddle_{self.riddle_id}"
         
         # Récupérer le token JWT depuis l'en-tête
         self.token = self.scope['headers'][1][1].decode('utf-8').split(' ')[1]  # Exemple : "Bearer <token>"
+        print(f"Token received: {self.token}")
         
         # Vérifier le token et récupérer l'utilisateur
         self.user = await self.get_user_from_token(self.token)
@@ -30,6 +32,7 @@ class RiddleConsumer(AsyncWebsocketConsumer):
         )
         
         await self.accept()
+        print(f"Connected to riddle {self.riddle_id}")
 
     async def disconnect(self, close_code):
         # Quitter le groupe

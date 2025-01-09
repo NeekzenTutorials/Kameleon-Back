@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-2x-6129m8_tcdanxhk3hkb^@dggzg^&d2@wq(7%o-2$z11-l$w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['kameleonback.jrcan.dev', 'kameleon.jrcan.dev']
 
 # SMTP / EMAIL Settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
