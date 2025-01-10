@@ -286,6 +286,7 @@ class Clan(models.Model):
     clan_bio = models.TextField(blank=True, null=True)
     clan_pci = models.ImageField(upload_to="clan_pictures/", blank=True, null=True)
     clan_members_count = models.PositiveIntegerField(default=0)
+    clan_members_max_count = models.PositiveIntegerField(default=10)
     clan_elo = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
 

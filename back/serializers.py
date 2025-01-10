@@ -88,6 +88,7 @@ class ClanSerializer(serializers.ModelSerializer):
             'clan_bio',
             'clan_pci',
             'clan_members_count',
+            'clan_members_max_count',
             'clan_elo',
             'created_at',
         ]
