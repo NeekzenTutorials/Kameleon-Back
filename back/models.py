@@ -220,8 +220,8 @@ class Clue(models.Model):
 
 class Resolve(models.Model):
     resolve_id = models.AutoField(primary_key=True)
-    member = models.ForeignKey('Member', on_delete=models.CASCADE, related_name="resolves")
-    riddle = models.ForeignKey('Riddle', on_delete=models.CASCADE, related_name="resolves")
+    member = models.ForeignKey('Member', on_delete=models.CASCADE, related_name="resolves", null=True, blank=True)
+    riddle = models.ForeignKey('Riddle', on_delete=models.CASCADE, related_name="resolves", null=True, blank=True)
     time_used = models.DurationField()  # Durée utilisée pour résoudre l'énigme
     attempts = models.PositiveIntegerField(default=0)  # Nombre d'essais
     completed_at = models.DateTimeField(blank=True, null=True)  # Date de résolution (si résolue)
