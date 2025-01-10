@@ -123,7 +123,19 @@ class Member(models.Model):
             percentage = 1.0
 
         self.member_score += riddle.riddle_points * percentage
+        self.update_rank_according_to_score()
         self.save()
+        
+    def update_rank_according_to_score(self):
+        new_rank = (
+            Rank.objects.filter(min_score__lte=self.member_score)
+            .order_by("-min_score")  # tri descendant
+            .first()
+        )
+        
+        if new_rank and new_rank != self.rank:
+            self.rank = new_rank
+            self.save()
 
     def lock_riddle(self, riddle):
         """Add a riddle to the list of locked riddles."""
@@ -153,6 +165,8 @@ class Rank(models.Model):
     rank_id = models.AutoField(primary_key=True)
     rank_name = models.CharField(max_length=50)
     rank_image = models.ImageField(upload_to="rank_images/", blank=True, null=True)
+    
+    min_score = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.rank_name
