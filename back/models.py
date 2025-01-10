@@ -216,6 +216,30 @@ class Clue(models.Model):
 
     def __str__(self):
         return f"Clue {self.clue_id} for Riddle {self.riddle.riddle_id}"
+    
+
+class Resolve(models.Model):
+    resolve_id = models.AutoField(primary_key=True)
+    member = models.ForeignKey('Member', on_delete=models.CASCADE, related_name="resolves", null=True, blank=True)
+    riddle = models.ForeignKey('Riddle', on_delete=models.CASCADE, related_name="resolves", null=True, blank=True)
+    time_used = models.DurationField()  # Durée utilisée pour résoudre l'énigme
+    attempts = models.PositiveIntegerField(default=0)  # Nombre d'essais
+    completed_at = models.DateTimeField(blank=True, null=True)  # Date de résolution (si résolue)
+    is_successful = models.BooleanField(default=False)  # Statut de réussite
+
+    def __str__(self):
+        return f"Resolve: {self.member.user.username} -> {self.riddle.riddle_id}"
+
+    def mark_successful(self):
+        """
+        Marque cette résolution comme réussie, enregistre la date et met à jour les données liées.
+        """
+        self.is_successful = True
+        self.completed_at = now()
+        self.save()
+        
+        # Ajouter l'énigme aux énigmes résolues du membre
+        self.member.add_riddle_to_achieved(self.riddle)
 
 
 class SoloRiddle(models.Model):
