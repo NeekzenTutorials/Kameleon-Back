@@ -14,7 +14,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
-from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer
+from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer, ClanSerializer
 from .models import User, Riddle, Member, Clue
 import requests
 
@@ -160,6 +160,8 @@ class MemberDashboardView(APIView):
     - bio
     - riddle_theme_distribution (ex: {"cryptographie": 80, "mathématique": 20})
     """
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
         member = get_object_or_404(Member, user=user)
@@ -208,6 +210,26 @@ class MemberDashboardView(APIView):
         }
 
         return Response(data, status=status.HTTP_200_OK)
+    
+class CreateClanView(APIView):
+    """
+    View pour permettre à un utilisateur de créer un clan.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ClanSerializer(data=request.data)
+        if serializer.is_valid():
+            # Enregistrer le clan
+            clan = serializer.save()
+            return Response(
+                {
+                    "message": f"Clan '{clan.clan_name}' créé avec succès!",
+                    "clan": ClanSerializer(clan).data,
+                },
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Gameplay views
 

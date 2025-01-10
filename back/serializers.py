@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Riddle, Clue, Member
+from .models import User, Riddle, Clue, Member, Clan
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -78,3 +78,17 @@ class RiddleSerializer(serializers.ModelSerializer):
             'dependance',
             'clues',
         ]
+    
+class ClanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Clan
+        fields = [
+            'clan_id',
+            'clan_name',
+            'clan_bio',
+            'clan_pci',
+            'clan_members_count',
+            'clan_elo',
+            'created_at',
+        ]
+        read_only_fields = ['clan_id', 'clan_members_count', 'clan_elo', 'created_at']

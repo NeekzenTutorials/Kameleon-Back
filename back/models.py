@@ -282,7 +282,10 @@ class HasImage(models.Model):
 
 class Clan(models.Model):
     clan_id = models.AutoField(primary_key=True)
-    clan_name = models.CharField(max_length=100)
+    clan_name = models.CharField(max_length=100, unique=True)
+    clan_bio = models.TextField(blank=True, null=True)
+    clan_pci = models.ImageField(upload_to="clan_pictures/", blank=True, null=True)
+    clan_members_count = models.PositiveIntegerField(default=0)
     clan_elo = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
 
