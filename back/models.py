@@ -48,7 +48,6 @@ class User(AbstractBaseUser):
     created_at = models.DateTimeField(auto_now_add=True)
     bio = models.TextField(blank=True, null=True)
     
-    rank = models.ForeignKey('Rank', on_delete=models.SET_NULL, null=True, blank=True)
     cv = models.OneToOneField('CV', on_delete=models.SET_NULL, null=True, blank=True)
     
     is_staff = models.BooleanField(default=False)
