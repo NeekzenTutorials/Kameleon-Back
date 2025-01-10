@@ -9,7 +9,12 @@ def create_member_for_user(sender, instance, created, **kwargs):
         
         try:
             rank_cochon = Rank.objects.filter(rank_name="cochon").first()
-            member.rank = rank_cochon
+            if rank_cochon:
+                member.rank = rank_cochon
+                member.save()
+            else:
+                # Optionnel : journaliser ou gérer le cas où le rang "cochon" n'existe pas
+                print("Rank 'cochon' introuvable. Aucun rang attribué au membre.")
         except Rank.DoesNotExist:
             pass
         
