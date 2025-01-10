@@ -8,7 +8,7 @@ def create_member_for_user(sender, instance, created, **kwargs):
         member = Member.objects.create(user=instance)
         
         try:
-            rank_cochon = Rank.objects.get(rank_name="cochon")
+            rank_cochon = Rank.objects.filter(rank_name="cochon").first()
             member.rank = rank_cochon
         except Rank.DoesNotExist:
             pass
