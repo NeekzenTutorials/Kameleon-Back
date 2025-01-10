@@ -161,9 +161,16 @@ class ClueAdmin(admin.ModelAdmin):
     
 @admin.register(Resolve)
 class ResolveAdmin(admin.ModelAdmin):
-    list_display = ('member', 'riddle', 'time_used', 'attempts', 'is_successful', 'completed_at')
-    search_fields = ('member__user__username', 'riddle__riddle_id')
+    list_display = ('resolve_id', 'get_member_username', 'get_riddle_theme', 'time_used', 'attempts', 'is_successful', 'completed_at')
     list_filter = ('is_successful', 'completed_at')
+
+    def get_member_username(self, obj):
+        return obj.member.user.username
+    get_member_username.short_description = "Member Username"
+
+    def get_riddle_theme(self, obj):
+        return obj.riddle.riddle_theme
+    get_riddle_theme.short_description = "Riddle Theme"
 
 @admin.register(SoloRiddle)
 class SoloRiddleAdmin(admin.ModelAdmin):
