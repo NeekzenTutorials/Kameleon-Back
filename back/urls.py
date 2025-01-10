@@ -30,5 +30,5 @@ urlpatterns = [
     path('api/riddles/<int:riddle_id>/', RiddleDetailView.as_view(), name='riddle-detail'),
     path('api/riddles/solve/', IsRiddleSolved.as_view(), name='is-riddle-solved'),
     path('api/riddles/clue/', GetClue.as_view(), name='get-clue'),
-    path('api/create-clan/', CreateClanView.as_view(), name='create-clan'),
+    path('api/clan/create/', CreateClanView.as_view(), name='create-clan'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
