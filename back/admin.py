@@ -41,10 +41,15 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(User, UserAdmin)
     
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ('user', 'member_score', 'member_clan_score')
+    list_display = ('user', 'member_score', 'member_clan_score', 'image_preview')
     search_fields = ('user__username',)
     list_filter = ('member_score',)
     filter_horizontal = ('achieved_riddles', 'locked_riddles', 'revealed_clues')
+    
+    def image_preview(self, obj):
+        if obj.rank.rank_image:
+            return format_html(f'<img src="{obj.rank.rank_image}" style="height: 50px;"/>')
+        return "No image"
     
 admin.site.register(Member, MemberAdmin)
 
