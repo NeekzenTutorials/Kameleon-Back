@@ -43,22 +43,41 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(User, UserAdmin)
     
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ('user', 'member_score', 'member_clan_score', 'rank_name', 'image_preview')
-    search_fields = ('user__username',)
-    list_filter = ('member_score',)
+    list_display = (
+        'user',
+        'member_score',
+        'member_clan_score',
+        'rank_name',
+        'clan_name',
+        'clan_image_preview',
+        'is_clan_admin',
+        'image_preview',
+    )
+    search_fields = ('user__username', 'clan__clan_name')
+    list_filter = ('member_score', 'clan')
     filter_horizontal = ('achieved_riddles', 'locked_riddles', 'revealed_clues')
     
+    def rank_name(self, obj):
+        return obj.rank.rank_name if obj.rank else "No rank"
+
     def image_preview(self, obj):
         if obj.rank and obj.rank.rank_image:
             return format_html(f'<img src="{obj.rank.rank_image.url}" style="height: 50px;"/>')
         return "No image"
     
-    def rank_name(self, obj):
-        return obj.rank.rank_name if obj.rank else "No rank"
+    def clan_name(self, obj):
+        return obj.clan.clan_name if obj.clan else "No clan"
+
+    def clan_image_preview(self, obj):
+        if obj.clan and obj.clan.clan_pci:
+            return format_html(f'<img src="{obj.clan.clan_pci.url}" style="height: 50px;"/>')
+        return "No image"
     
     rank_name.short_description = 'Rank'
     image_preview.short_description = 'Rank Image'
-    
+    clan_name.short_description = 'Clan'
+    clan_image_preview.short_description = 'Clan Image'
+
 admin.site.register(Member, MemberAdmin)
 
 @admin.register(Rank)

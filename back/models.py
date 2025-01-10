@@ -74,6 +74,8 @@ class Member(models.Model):
     member_score = models.FloatField(default=0.0)
     member_clan_score = models.FloatField(default=0.0)
     rank = models.ForeignKey('Rank', on_delete=models.SET_NULL, null=True, blank=True)
+    clan = models.ForeignKey('Clan', on_delete=models.SET_NULL, null=True, blank=True)
+    is_clan_admin = models.BooleanField(default=False)
     
     achieved_riddles = models.ManyToManyField(
         'Riddle',
