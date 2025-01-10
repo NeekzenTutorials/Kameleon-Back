@@ -10,7 +10,8 @@ from .models import (
     SoloRiddle,
     VersusRiddle,
     VersusRiddleImage,
-    HasImage 
+    HasImage,
+    Resolve 
 )
 
 admin.site.site_header = "Administration de Kameleon"
@@ -157,6 +158,12 @@ class ClueAdmin(admin.ModelAdmin):
     search_fields = ('clue_text',)
     list_filter = ('riddle',)
     ordering = ('riddle',)
+    
+@admin.register(Resolve)
+class ResolveAdmin(admin.ModelAdmin):
+    list_display = ('member', 'riddle', 'time_used', 'attempts', 'is_successful', 'completed_at')
+    search_fields = ('member__user__username', 'riddle__riddle_id')
+    list_filter = ('is_successful', 'completed_at')
 
 @admin.register(SoloRiddle)
 class SoloRiddleAdmin(admin.ModelAdmin):

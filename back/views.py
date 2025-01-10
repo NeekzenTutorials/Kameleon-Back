@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
+from django.db.models import Count
 from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer
 from .models import User, Riddle, Member, Clue
 import requests
@@ -147,6 +148,66 @@ class RiddleDetailView(generics.RetrieveAPIView):
     serializer_class = RiddleSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'riddle_id'
+    
+class MemberDashboardView(APIView):
+    """
+    Send the following data:
+    - score_solo
+    - clan_name (ou None)
+    - rank_image_url
+    - rank_name
+    - achieved_riddles_count
+    - bio
+    - riddle_theme_distribution (ex: {"cryptographie": 80, "mathématique": 20})
+    """
+    def get(self, request, username):
+        user = get_object_or_404(User, username=username)
+        member = get_object_or_404(Member, user=user)
+
+        score_solo = member.member_score
+
+        clan_name = getattr(member, "clan", None)
+        if clan_name:
+            clan_name = str(clan_name)
+
+        rank_image_url = None
+        if member.rank and member.rank.rank_image:
+            rank_image_url = member.rank.rank_image.url
+
+        rank_name = member.rank.rank_name if member.rank else None
+
+        achieved_riddles_count = member.achieved_riddles.count()
+
+        bio = user.bio
+
+        theme_counts = (
+            member.achieved_riddles
+            .values("riddle_theme")
+            .annotate(count=Count("riddle_theme"))
+        )
+        # Calcul du total
+        total_riddles = sum(item["count"] for item in theme_counts)
+        theme_distribution = {}
+        if total_riddles > 0:
+            for item in theme_counts:
+                theme = item["riddle_theme"]
+                count = item["count"]
+                percentage = round((count / total_riddles) * 100, 2)
+                theme_distribution[theme] = percentage
+        else:
+            pass
+
+        data = {
+            "score_solo": score_solo,
+            "clan_name": clan_name,  # ou None
+            "rank_image_url": rank_image_url,  # ou None
+            "rank_name": rank_name,            # ou None
+            "achieved_riddles_count": achieved_riddles_count,
+            "bio": bio,
+            "riddle_theme_distribution": theme_distribution,  # ex: {"cryptographie": 80, "math": 20}
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
 
 # Gameplay views
 
