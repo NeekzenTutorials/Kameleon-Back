@@ -72,6 +72,7 @@ class Member(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     member_score = models.FloatField(default=0.0)
     member_clan_score = models.FloatField(default=0.0)
+    rank = models.ForeignKey('Rank', on_delete=models.SET_NULL, null=True, blank=True)
     
     achieved_riddles = models.ManyToManyField(
         'Riddle',
@@ -94,7 +95,7 @@ class Member(models.Model):
     )
     
     def __str__(self):
-        return f"{self.user.username} - Score: {self.member_score}"
+        return f"{self.user.username} - Rank : {self.rank} - Score: {self.member_score}"
     
     def add_riddle_to_achieved(self, riddle):
         """Add a riddle to the list of achieved riddles."""
