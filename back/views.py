@@ -222,6 +222,17 @@ class CreateClanView(APIView):
         if serializer.is_valid():
             # Enregistrer le clan
             clan = serializer.save()
+
+            user = request.user
+            try:
+                member = Member.objects.get(user=user)
+            except Member.DoesNotExist:
+                member = Member.objects.create(user=user)
+
+            member.clan = clan
+            member.is_clan_admin = True
+            member.save()
+
             return Response(
                 {
                     "message": f"Clan '{clan.clan_name}' créé avec succès!",

@@ -48,10 +48,10 @@ class MemberAdmin(admin.ModelAdmin):
         'member_score',
         'member_clan_score',
         'rank_name',
+        'image_preview',
         'clan_name',
         'clan_image_preview',
         'is_clan_admin',
-        'image_preview',
     )
     search_fields = ('user__username', 'clan__clan_name')
     list_filter = ('member_score', 'clan')
