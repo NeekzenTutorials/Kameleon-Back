@@ -294,6 +294,7 @@ class Clan(models.Model):
 ########################################################################################################
 # region Play
 
+
 class Compete(models.Model):
     clan = models.ForeignKey(Clan, on_delete=models.CASCADE)
     riddle = models.ForeignKey(Riddle, on_delete=models.CASCADE)
