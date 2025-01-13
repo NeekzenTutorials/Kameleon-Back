@@ -43,7 +43,7 @@ class CV(models.Model):
 class User(AbstractBaseUser):
     username = models.CharField(max_length=50, unique=True)
     email = models.EmailField(max_length=50, unique=True)
-    profile_picture = models.ImageField(upload_to="profile_pictures/", blank=True, null=True)
+    profile_picture = models.ImageField(upload_to="profile_pictures/", blank=True, null=True, default="profile_pictures/default_pp.png")
     last_connection = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     bio = models.TextField(blank=True, null=True)
