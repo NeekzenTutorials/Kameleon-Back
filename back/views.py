@@ -271,6 +271,14 @@ class JoinClanView(APIView):
             },
             status=status.HTTP_200_OK
         )
+    
+class ClanListView(generics.ListAPIView):
+    """
+    Vue pour lister tous les clans.
+    """
+    queryset = Clan.objects.all()
+    serializer_class = ClanSerializer
+    permission_classes = [IsAuthenticated]
 
 # Gameplay views
 
