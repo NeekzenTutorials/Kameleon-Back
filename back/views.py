@@ -132,13 +132,21 @@ class MemberRiddlesView(APIView):
             "lockedRiddles": locked_riddles
         })
     
-class RiddleListView(generics.ListAPIView):
+class SoloRiddleListView(generics.ListAPIView):
     """
     Vue pour lister toutes les énigmes.
     """
-    queryset = Riddle.objects.all()
+    queryset = Riddle.objects.filter(riddle_mode='solo')
     serializer_class = RiddleSerializer
     permission_classes = [IsAuthenticated] 
+
+class CoopRiddleListView(generics.ListAPIView):
+    """
+    Vue pour lister toutes les énigmes.
+    """
+    queryset = Riddle.objects.filter(riddle_mode='coop')
+    serializer_class = RiddleSerializer
+    permission_classes = [IsAuthenticated]
 
 class RiddleDetailView(generics.RetrieveAPIView):
     """

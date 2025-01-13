@@ -182,7 +182,7 @@ class Riddle(models.Model):
     
     RIDDLE_MODE_CHOICES = [
         ('solo', 'Solo'),
-        ('versus', 'Versus'),
+        ('coop', 'Coop'),
     ]
     
     riddle_id = models.AutoField(primary_key=True)
