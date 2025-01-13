@@ -15,7 +15,7 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer, ClanSerializer
-from .models import User, Riddle, Member, Clue
+from .models import User, Riddle, Member, Clue, Clan
 import requests
 
 
@@ -241,6 +241,36 @@ class CreateClanView(APIView):
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class JoinClanView(APIView):
+    """
+    View pour permettre à un utilisateur de rejoindre un clan.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        try:
+            member = Member.objects.get(user=user)
+        except Member.DoesNotExist:
+            member = Member.objects.create(user=user)
+
+        clan_name = request.data.get("clan_name")
+        try:
+            clan = Clan.objects.get(clan_name=clan_name)
+        except Clan.DoesNotExist:
+            return Response({"error": "Clan not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        member.clan = clan
+        member.save()
+
+        return Response(
+            {
+                "message": f"Vous avez rejoint le clan '{clan_name}' avec succès!",
+                "clan": ClanSerializer(clan).data,
+            },
+            status=status.HTTP_200_OK
+        )
 
 # Gameplay views
 
