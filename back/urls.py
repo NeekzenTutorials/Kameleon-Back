@@ -19,7 +19,9 @@ from .views import (
     MemberDashboardView,
     CreateClanView,
     JoinClanView,
-    ClanListView
+    ClanListView,
+    UploadCVView,
+    GetCVView
 )
 
 urlpatterns = [
@@ -41,4 +43,6 @@ urlpatterns = [
     path('api/clans/', ClanListView.as_view(), name='clan-list'),
     path('api/clans/create/', CreateClanView.as_view(), name='create-clan'),
     path('api/clans/join/', JoinClanView.as_view(), name='join-clan'),
+    path('cv/upload/', UploadCVView.as_view(), name='upload_cv'),
+    path('cv/', GetCVView.as_view(), name='get_cv'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

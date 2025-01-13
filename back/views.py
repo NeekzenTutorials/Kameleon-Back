@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.generics import RetrieveAPIView
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth.hashers import make_password
@@ -14,8 +15,8 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
-from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer, ClanSerializer
-from .models import User, Riddle, Member, Clue, Clan
+from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer, ClanSerializer, CVSerializer
+from .models import User, Riddle, Member, Clue, Clan, CV
 import requests
 
 
@@ -303,6 +304,46 @@ class ClanListView(generics.ListAPIView):
     queryset = Clan.objects.all()
     serializer_class = ClanSerializer
     permission_classes = [IsAuthenticated]
+
+class UploadCVView(APIView):
+    """
+    Vue pour uploader un CV pour l'utilisateur connecté.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+
+        # Vérifier si un fichier est présent dans la requête
+        if 'cv' not in request.FILES:
+            return Response({"error": "Aucun fichier n'a été fourni."}, status=status.HTTP_400_BAD_REQUEST)
+
+        file = request.FILES['cv']
+
+        # Vérifier si un CV est déjà associé à l'utilisateur
+        if user.cv:
+            user.cv.cv_file.delete()  # Supprimer l'ancien fichier
+            user.cv.delete()
+
+        # Créer et associer le nouveau CV
+        cv = CV.objects.create(cv_file=file)
+        user.cv = cv
+        user.save()
+
+        return Response({"message": "CV uploadé avec succès !", "cv_id": cv.cv_id}, status=status.HTTP_201_CREATED)
+    
+class GetCVView(RetrieveAPIView):
+    """
+    Vue pour récupérer le CV de l'utilisateur connecté.
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = CVSerializer
+
+    def get_object(self):
+        user = self.request.user
+        if not user.cv:
+            raise Response({"error": "Aucun CV n'est associé à cet utilisateur."}, status=status.HTTP_404_NOT_FOUND)
+        return user.cv
 
 # Gameplay views
 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Riddle, Clue, Member, Clan
+from .models import User, Riddle, Clue, Member, Clan, CV
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -93,3 +93,8 @@ class ClanSerializer(serializers.ModelSerializer):
             'created_at',
         ]
         read_only_fields = ['clan_id', 'clan_members_count', 'clan_elo', 'created_at']
+
+class CVSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CV
+        fields = ['cv_id', 'cv_file', 'upload_date']
