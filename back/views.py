@@ -315,20 +315,25 @@ class UploadCVView(APIView):
         user = request.user
 
         # Vérifier si le membre a un rang spécifique
+        allowed_ranks = ["poisson pierre", "panda ghillie", "kameleon"]  # Rangs autorisés
         member = getattr(user, "member", None)  # Récupérer le membre lié à l'utilisateur
-        if not member or not member.rank or member.rank.name != "poisson pierre":
+        if not member or not member.rank or member.rank.rank_name not in allowed_ranks:
             return Response(
-                {"error": "Vous devez avoir le rang 'poisson pierre' pour uploader un CV."},
+                {"error": "Vous n'avez pas les permissions pour uploader un CV."},
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        # Vérifier si un fichier est présent dans la requête
+        # Vérifier si un fichier est fourni
         if 'cv' not in request.FILES:
             return Response({"error": "Aucun fichier n'a été fourni."}, status=status.HTTP_400_BAD_REQUEST)
 
         file = request.FILES['cv']
 
-        # Vérifier si un CV est déjà associé à l'utilisateur
+        # Vérifier le type du fichier
+        if file.content_type != 'application/pdf' or not file.name.endswith('.pdf'):
+            return Response({"error": "Seuls les fichiers PDF sont acceptés."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Gestion des fichiers existants
         if user.cv:
             user.cv.cv_file.delete()  # Supprimer l'ancien fichier
             user.cv.delete()
