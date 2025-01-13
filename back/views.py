@@ -262,6 +262,7 @@ class JoinClanView(APIView):
             return Response({"error": "Clan not found."}, status=status.HTTP_404_NOT_FOUND)
 
         member.clan = clan
+        clan.clan_members_count += 1
         member.save()
 
         return Response(
