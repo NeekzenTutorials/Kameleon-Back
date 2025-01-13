@@ -314,6 +314,14 @@ class UploadCVView(APIView):
     def post(self, request):
         user = request.user
 
+        # Vérifier si le membre a un rang spécifique
+        member = getattr(user, "member", None)  # Récupérer le membre lié à l'utilisateur
+        if not member or not member.rank or member.rank.name != "poisson pierre":
+            return Response(
+                {"error": "Vous devez avoir le rang 'poisson pierre' pour uploader un CV."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         # Vérifier si un fichier est présent dans la requête
         if 'cv' not in request.FILES:
             return Response({"error": "Aucun fichier n'a été fourni."}, status=status.HTTP_400_BAD_REQUEST)
