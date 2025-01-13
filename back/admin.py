@@ -55,7 +55,7 @@ class MemberAdmin(admin.ModelAdmin):
     )
     search_fields = ('user__username', 'clan__clan_name')
     list_filter = ('member_score', 'clan')
-    filter_horizontal = ('achieved_riddles', 'locked_riddles', 'revealed_clues')
+    filter_horizontal = ('achieved_riddles', 'locked_riddles', 'achieved_coop_riddles', 'locked_coop_riddles', 'revealed_clues')
     
     def rank_name(self, obj):
         return obj.rank.rank_name if obj.rank else "No rank"

@@ -90,6 +90,20 @@ class Member(models.Model):
         verbose_name="Énigmes verrouillées"
     )
 
+    achieved_coop_riddles = models.ManyToManyField(
+        'Riddle',
+        blank=True,
+        related_name='achieved_by_coop_members',
+        verbose_name="Énigmes coop réussies"
+    )
+
+    locked_coop_riddles = models.ManyToManyField(
+        'Riddle',
+        blank=True,
+        related_name='locked_by_coop_members',
+        verbose_name="Énigmes coop verrouillées"
+    )
+
     revealed_clues = models.ManyToManyField(
         'Clue',
         blank=True,
@@ -127,6 +141,33 @@ class Member(models.Model):
 
         self.member_score += riddle.riddle_points * percentage
         self.update_rank_according_to_score()
+        self.save()
+
+    def add_coop_riddle_to_achieved(self, riddle):
+        """Add a riddle to the list of achieved coop riddles."""
+        self.achieved_coop_riddles.add(riddle)
+
+        all_riddles = Riddle.objects.all()
+        for other_riddle in all_riddles:
+            if riddle in other_riddle.riddle_dependance.all():
+                if other_riddle in self.locked_coop_riddles.all():
+                    self.locked_coop_riddles.remove(other_riddle)
+
+        riddle_clues = Clue.objects.filter(riddle=riddle)
+        riddle_ids = riddle_clues.values_list('riddle_id', flat=True)
+        revealed_riddle_clues = self.revealed_clues.filter(riddle__in=riddle_ids)
+        revealed_clues_count = revealed_riddle_clues.count()
+
+        if revealed_clues_count == 1:
+            percentage = 0.75
+        elif revealed_clues_count == 2:
+            percentage = 0.5
+        elif revealed_clues_count == 3:
+            percentage = 0.25
+        else:
+            percentage = 1.0
+
+        self.member_clan_score += riddle.riddle_points * percentage
         self.save()
         
     def update_rank_according_to_score(self):

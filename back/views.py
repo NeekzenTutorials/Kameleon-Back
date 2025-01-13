@@ -132,6 +132,21 @@ class MemberRiddlesView(APIView):
             "lockedRiddles": locked_riddles
         })
     
+class MemberCoopRiddlesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, username):
+        user = get_object_or_404(User, username=username)
+        member = get_object_or_404(Member, user=user)
+
+        achieved_coop_riddles = SimpleRiddleSerializer(member.achieved_coop_riddles.all(), many=True).data
+        locked_coop_riddles = SimpleRiddleSerializer(member.locked_coop_riddles.all(), many=True).data
+
+        return Response({
+            "achievedCoopRiddles": achieved_coop_riddles,
+            "lockedCoopRiddles": locked_coop_riddles
+        })
+    
 class SoloRiddleListView(generics.ListAPIView):
     """
     Vue pour lister toutes les énigmes.
@@ -317,6 +332,37 @@ class IsRiddleSolved(APIView):
         if user_response == riddle.riddle_response:
             # Add the riddle to the user's solved riddles
             member.add_riddle_to_achieved(riddle)
+            return Response({'is_solved': True, 'message': 'Correct answer!'}, status=status.HTTP_200_OK)
+
+        # If the response is incorrect
+        return Response({'is_solved': False, 'message': 'Incorrect answer'}, status=status.HTTP_200_OK)
+    
+class IsCoopRiddleSolved(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = request.data
+        user = request.user
+        member = user.member
+
+        riddle_id = data.get('riddle_id')
+        user_response = data.get('response')
+
+        # If riddle_id doesn't exist
+        try:
+            riddle = Riddle.objects.get(riddle_id=riddle_id)
+        except Riddle.DoesNotExist:
+            return Response({'error': 'Riddle not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # If user already solved the riddle
+        member_achieved_riddles = member.achieved_coop_riddles.all()
+        if riddle in member_achieved_riddles:
+            return Response({'is_solved': True, 'message': 'Riddle already solved'}, status=status.HTTP_200_OK)
+
+        # Check if the response is correct
+        if user_response == riddle.riddle_response:
+            # Add the riddle to the user's solved riddles
+            member.add__coop_riddle_to_achieved_coop(riddle)
             return Response({'is_solved': True, 'message': 'Correct answer!'}, status=status.HTTP_200_OK)
 
         # If the response is incorrect
