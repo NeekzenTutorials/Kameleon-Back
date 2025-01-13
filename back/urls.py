@@ -14,7 +14,8 @@ from .views import (
     GetClue,
     ActivateAccountView,
     MemberDashboardView,
-    CreateClanView
+    CreateClanView,
+    JoinClanView
 )
 
 urlpatterns = [
@@ -31,4 +32,5 @@ urlpatterns = [
     path('api/riddles/solve/', IsRiddleSolved.as_view(), name='is-riddle-solved'),
     path('api/riddles/clue/', GetClue.as_view(), name='get-clue'),
     path('api/clan/create/', CreateClanView.as_view(), name='create-clan'),
+    path('api/clan/join/', JoinClanView.as_view(), name='join-clan'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
