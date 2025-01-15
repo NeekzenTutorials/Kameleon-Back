@@ -13,7 +13,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.db.models import Count
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -62,11 +62,17 @@ class ActivateAccountView(APIView):
         user = get_object_or_404(User, id=user_id)
         
         if default_token_generator.check_token(user, token):
-            user.is_active = True  # Activate account
-            user.save()
-            return Response({'message': 'Account activated successfully.'}, status=status.HTTP_200_OK)
+            if not user.is_active:
+                user.is_active = True  # Activer le compte
+                user.save()
+                # Rediriger vers la page de succès front-end
+                return redirect('https://kameleon.jrcan.dev/succes_mail/')
+            else:
+                # Rediriger vers une page informant que le compte est déjà activé
+                return Response({'error': 'Compte déjà activé'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
+            # Rediriger vers une page d'erreur front-end
+            return Response({'error': 'Erreur de vérification'}, status=status.HTTP_400_BAD_REQUEST)
         
 class LogInView(APIView):
     def post(self, request):
