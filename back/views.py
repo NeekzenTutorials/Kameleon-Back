@@ -573,3 +573,12 @@ class RespondCoopInvitationView(APIView):
             invitation.status = 'rejected'
             invitation.save()
             return Response({"message": "Invitation rejetée."}, status=status.HTTP_200_OK)
+        
+class FetchReceivedInvitationsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        member = request.user.member  # Assurez-vous que chaque utilisateur a une relation OneToOne avec Member
+        pending_invitations = CoopInvitation.objects.filter(invitee=member, status='pending')
+        serializer = CoopInvitationSerializer(pending_invitations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

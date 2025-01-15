@@ -24,7 +24,8 @@ from .views import (
     GetCVView,
     RespondCoopInvitationView,
     CoopConnectedMembersView,
-    InviteMemberToCoopView
+    InviteMemberToCoopView,
+    FetchReceivedInvitationsView
 )
 
 urlpatterns = [
@@ -42,9 +43,10 @@ urlpatterns = [
     path('api/riddles/<int:riddle_id>/', RiddleDetailView.as_view(), name='riddle-detail'),
     path('api/riddles/solve/', IsRiddleSolved.as_view(), name='is-riddle-solved'),
     path('api/riddles/coop/solve/', IsCoopRiddleSolved.as_view(), name='is-coop-riddle-solved'),
-    path('clan/invite/', InviteMemberToCoopView.as_view(), name='coop-invite'),
-    path('coop/invitations/<int:invitation_id>/respond/', RespondCoopInvitationView.as_view(), name='respond-coop-invitation'),
-    path('coop/members/<int:riddle_id>/', CoopConnectedMembersView.as_view(), name='coop-connected-members'),
+    path('api/clans/invite/', InviteMemberToCoopView.as_view(), name='coop-invite'),
+    path('api/clans/invitations/received/', FetchReceivedInvitationsView.as_view(), name='fetch-received-invitations'),
+    path('api/coop/invitations/<int:invitation_id>/respond/', RespondCoopInvitationView.as_view(), name='respond-coop-invitation'),
+    path('api/coop/members/<int:riddle_id>/', CoopConnectedMembersView.as_view(), name='coop-connected-members'),
     path('api/riddles/clue/', GetClue.as_view(), name='get-clue'),
     path('api/clans/', ClanListView.as_view(), name='clan-list'),
     path('api/clans/create/', CreateClanView.as_view(), name='create-clan'),
