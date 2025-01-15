@@ -43,6 +43,7 @@ EMAIL_HOST_USER = env('EMAIL_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_PASSWORD')
 DEFAULT_FROM_EMAIL = env('EMAIL_USER')
 BACKEND_URL = 'https://kameleonback.jrcan.dev'
+FRONTEND_URL = 'https://kameleon.jrcan.dev'
 
 # Application definition
 
