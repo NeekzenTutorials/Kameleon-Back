@@ -515,10 +515,10 @@ class IsCoopRiddleSolved(APIView):
         try:
             # Parse expected riddle response from JSONField
             expected_response = riddle.riddle_response
-            print("DEBUG: ", expected_response)
-            print("DEBUG: ", user_response)
+            expected_value = expected_response.get('value', {})
+            user_value = user_response.get('value', {})
             # Compare user_response and expected_response
-            if user_response == expected_response:
+            if user_value == expected_value:
                 # Add the riddle to the user's solved riddles
                 member.add__coop_riddle_to_achieved_coop(riddle)
                 return Response({'is_solved': True, 'message': 'Correct answer!'}, status=status.HTTP_200_OK)
