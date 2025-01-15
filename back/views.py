@@ -525,26 +525,33 @@ class GetClue(APIView):
         riddle_id = request.data.get('riddle_id')
         clue_number = request.data.get('clue')
 
+        # Validation de l'entrée
+        if not isinstance(clue_number, int):
+            return Response({'error': 'Invalid clue number. Must be an integer.'}, status=status.HTTP_400_BAD_REQUEST)
+        if clue_number not in [1, 2, 3]:
+            return Response({'error': 'Invalid clue number. Must be 1, 2, or 3.'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             riddle = Riddle.objects.get(riddle_id=riddle_id)
         except Riddle.DoesNotExist:
             return Response({'error': 'Riddle not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Check if clue exists
-        clue = Clue.objects.filter(riddle=riddle).order_by('clue_id')[clue_number - 1] if clue_number in [1, 2, 3] else None
-
-        if not clue:
+        try:
+            # Accès à l'indice correspondant
+            clue = Clue.objects.filter(riddle=riddle).order_by('clue_id')[clue_number - 1]
+        except IndexError:
             return Response({'error': 'Invalid clue number.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if the user has already used this hint
+        # Vérifier si l'utilisateur a déjà vu cet indice
         member = user.member
         if clue in member.revealed_clues.all():
             return Response({'hint': clue.clue_text}, status=status.HTTP_200_OK)
 
-        # Save the clue in the member's revealed clues
+        # Ajouter l'indice dans les indices révélés
         member.revealed_clues.add(clue)
 
         return Response({'hint': clue.clue_text}, status=status.HTTP_200_OK)
+
     
 class InviteMemberToCoopView(APIView):
     permission_classes = [IsAuthenticated]
