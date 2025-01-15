@@ -27,9 +27,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'profile_picture']
         
 class MemberSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username', read_only=True)
-    email = serializers.EmailField(source='user.email', read_only=True)
-    
     achieved_riddles = serializers.PrimaryKeyRelatedField(
         many=True, 
         queryset=Riddle.objects.all()
@@ -49,17 +46,7 @@ class MemberSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Member
-        fields = [
-            'user', 
-            'username',
-            'email',
-            'member_score', 
-            'member_clan_score', 
-            'achieved_riddles', 
-            'locked_riddles', 
-            'achieved_coop_riddles', 
-            'locked_coop_riddles'
-        ]
+        fields = ['user', 'member_score', 'member_clan_score', 'achieved_riddles', 'locked_riddles', 'achieved_coop_riddles', 'locked_coop_riddles']
         read_only_fields = ['user']
         
 class ClueSerializer(serializers.ModelSerializer):

@@ -308,7 +308,7 @@ class ClanListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     
 class CoopConnectedMembersView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, riddle_id):
         try:
@@ -529,7 +529,7 @@ class InviteMemberToCoopView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class RespondCoopInvitationView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, invitation_id):
         member = request.user.member
