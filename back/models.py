@@ -335,6 +335,25 @@ class Clan(models.Model):
 
     def __str__(self):
         return self.clan_name
+    
+class CoopInvitation(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'En attente'),
+        ('accepted', 'Acceptée'),
+        ('rejected', 'Rejetée'),
+    ]
+
+    riddle = models.ForeignKey('Riddle', on_delete=models.CASCADE, related_name='coop_invitations')
+    inviter = models.ForeignKey('Member', on_delete=models.CASCADE, related_name='sent_coop_invitations')
+    invitee = models.ForeignKey('Member', on_delete=models.CASCADE, related_name='received_coop_invitations')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('riddle', 'invitee')  # Empêche les invitations multiples pour le même riddle et invitee
+
+    def __str__(self):
+        return f"Invitation de {self.inviter.user.username} à {self.invitee.user.username} pour {self.riddle.riddle_type} ({self.status})"
 
 # endregion
 ########################################################################################################

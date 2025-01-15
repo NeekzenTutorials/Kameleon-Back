@@ -15,8 +15,10 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
-from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer, ClanSerializer, CVSerializer
-from .models import User, Riddle, Member, Clue, Clan, CV
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer, ClanSerializer, CVSerializer, CoopInvitationSerializer
+from .models import User, Riddle, Member, Clue, Clan, CV, CoopInvitation
 import requests
 
 
@@ -304,6 +306,26 @@ class ClanListView(generics.ListAPIView):
     queryset = Clan.objects.all()
     serializer_class = ClanSerializer
     permission_classes = [IsAuthenticated]
+    
+class CoopConnectedMembersView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, riddle_id):
+        try:
+            riddle = Riddle.objects.get(riddle_id=riddle_id)
+        except Riddle.DoesNotExist:
+            return Response({"error": "Énigme non trouvée."}, status=status.HTTP_404_NOT_FOUND)
+
+        group_name = f"coop_{riddle.riddle_id}"
+        channel_layer = get_channel_layer()
+        connected_members = []
+
+        # Obtenir les membres connectés via le channel layer
+        invitations = CoopInvitation.objects.filter(riddle=riddle, status='accepted')
+        connected_members = [invitation.invitee for invitation in invitations]
+
+        serializer = MemberSerializer(connected_members, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class UploadCVView(APIView):
     """
@@ -450,3 +472,104 @@ class GetClue(APIView):
         member.revealed_clues.add(clue)
 
         return Response({'hint': clue.clue_text}, status=status.HTTP_200_OK)
+    
+class InviteMemberToCoopView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        inviter_member = request.user.member
+        riddle_id = request.data.get('riddle_id')
+        invitee_username = request.data.get('invitee_username')
+
+        if not riddle_id or not invitee_username:
+            return Response({"error": "riddle_id et invitee_username sont requis."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            riddle = Riddle.objects.get(riddle_id=riddle_id)
+        except Riddle.DoesNotExist:
+            return Response({"error": "Énigme non trouvée."}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            invitee_user = User.objects.get(username=invitee_username)
+            invitee_member = invitee_user.member
+        except User.DoesNotExist:
+            return Response({"error": "Utilisateur non trouvé."}, status=status.HTTP_404_NOT_FOUND)
+        except Member.DoesNotExist:
+            return Response({"error": "Membre non trouvé."}, status=status.HTTP_404_NOT_FOUND)
+
+        if invitee_member == inviter_member:
+            return Response({"error": "Vous ne pouvez pas vous inviter vous-même."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if CoopInvitation.objects.filter(riddle=riddle, invitee=invitee_member, status='pending').exists():
+            return Response({"error": "Une invitation est déjà en attente pour cet utilisateur."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Créer l'invitation
+        invitation = CoopInvitation.objects.create(
+            riddle=riddle,
+            inviter=inviter_member,
+            invitee=invitee_member
+        )
+
+        serializer = CoopInvitationSerializer(invitation)
+
+        # Envoyer une notification via WebSocket
+        channel_layer = get_channel_layer()
+        group_name = f"user_{invitee_user.id}"
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                'type': 'coop_invitation',
+                'message': f"{inviter_member.user.username} vous a invité à rejoindre la coopérative pour l'énigme '{riddle.riddle_type}'.",
+                'invitation_id': invitation.id,
+                'riddle_id': riddle.riddle_id,
+                'riddle_type': riddle.riddle_type,
+            }
+        )
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+class RespondCoopInvitationView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, invitation_id):
+        member = request.user.member
+        response = request.data.get('response')  # 'accept' ou 'reject'
+
+        try:
+            invitation = CoopInvitation.objects.get(id=invitation_id, invitee=member, status='pending')
+        except CoopInvitation.DoesNotExist:
+            return Response({"error": "Invitation non trouvée ou déjà traitée."}, status=status.HTTP_404_NOT_FOUND)
+
+        if response not in ['accept', 'reject']:
+            return Response({"error": "Réponse invalide."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if response == 'accept':
+            # Ajouter le membre au groupe coopératif via WebSocket
+            channel_layer = get_channel_layer()
+            group_name = f"coop_{invitation.riddle.riddle_id}"
+            async_to_sync(channel_layer.group_add)(
+                group_name,
+                f"user_{member.user.id}"
+            )
+
+            # Mettre à jour l'état de l'invitation
+            invitation.status = 'accepted'
+            invitation.save()
+
+            # Notifier le groupe coopératif que le membre a rejoint
+            async_to_sync(channel_layer.group_send)(
+                group_name,
+                {
+                    'type': 'member_joined',
+                    'message': f"{member.user.username} a rejoint la coopérative.",
+                    'member_id': member.user.id,
+                    'username': member.user.username,
+                }
+            )
+
+            return Response({"message": "Invitation acceptée. Vous avez rejoint la coopérative."}, status=status.HTTP_200_OK)
+
+        elif response == 'reject':
+            invitation.status = 'rejected'
+            invitation.save()
+            return Response({"message": "Invitation rejetée."}, status=status.HTTP_200_OK)

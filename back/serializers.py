@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Riddle, Clue, Member, Clan, CV
+from .models import User, Riddle, Clue, Member, Clan, CV, CoopInvitation
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,6 +27,9 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'profile_picture']
         
 class MemberSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+    
     achieved_riddles = serializers.PrimaryKeyRelatedField(
         many=True, 
         queryset=Riddle.objects.all()
@@ -35,10 +38,28 @@ class MemberSerializer(serializers.ModelSerializer):
         many=True, 
         queryset=Riddle.objects.all()
     )
+    achieved_coop_riddles = serializers.PrimaryKeyRelatedField(
+        many=True, 
+        queryset=Riddle.objects.all()
+    )
+    locked_coop_riddles = serializers.PrimaryKeyRelatedField(
+        many=True, 
+        queryset=Riddle.objects.all()
+    )
     
     class Meta:
         model = Member
-        fields = ['user', 'member_score', 'member_clan_score', 'achieved_riddles', 'locked_riddles']
+        fields = [
+            'user', 
+            'username',
+            'email',
+            'member_score', 
+            'member_clan_score', 
+            'achieved_riddles', 
+            'locked_riddles', 
+            'achieved_coop_riddles', 
+            'locked_coop_riddles'
+        ]
         read_only_fields = ['user']
         
 class ClueSerializer(serializers.ModelSerializer):
@@ -98,3 +119,13 @@ class CVSerializer(serializers.ModelSerializer):
     class Meta:
         model = CV
         fields = ['cv_id', 'cv_file', 'upload_date']
+        
+class CoopInvitationSerializer(serializers.ModelSerializer):
+    inviter_username = serializers.CharField(source='inviter.user.username', read_only=True)
+    invitee_username = serializers.CharField(source='invitee.user.username', read_only=True)
+    riddle_type = serializers.CharField(source='riddle.riddle_type', read_only=True)
+
+    class Meta:
+        model = CoopInvitation
+        fields = ['id', 'riddle', 'riddle_type', 'inviter', 'inviter_username', 'invitee', 'invitee_username', 'status', 'created_at']
+        read_only_fields = ['id', 'status', 'created_at']

@@ -12,7 +12,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 from channels.auth import AuthMiddlewareStack
 from django.urls import path
-from back.consumers import ChatConsumer
+from back.consumers import ChatConsumer, NotificationConsumer, CoopConsumer
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kameleon_back.settings')
 
@@ -21,6 +21,8 @@ application = ProtocolTypeRouter({
     "websocket": AuthMiddlewareStack(
         URLRouter([
             path("ws/chat/", ChatConsumer.as_asgi()),
+            path("ws/notifications/", NotificationConsumer.as_asgi()),
+            path("ws/coop/<int:riddle_id>/", CoopConsumer.as_asgi()),
         ])
     ),
 })
