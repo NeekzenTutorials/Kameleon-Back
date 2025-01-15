@@ -42,12 +42,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 class CoopConsumer(AsyncWebsocketConsumer):
+    
+    @database_sync_to_async
+    def get_member(self, user):
+        return user.member
+    
     async def connect(self):
         user = self.scope["user"]
         if user.is_anonymous:
             await self.close()
         else:
-            self.member = user.member
+            self.member = await self.get_member(user)
             self.riddle_id = self.scope['url_route']['kwargs']['riddle_id']
             self.group_name = f"coop_{self.riddle_id}"
 
