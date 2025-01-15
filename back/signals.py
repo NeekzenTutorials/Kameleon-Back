@@ -19,5 +19,5 @@ def create_member_for_user(sender, instance, created, **kwargs):
             pass
         
         # Set all riddles in locked_riddles
-        riddles_to_lock = Riddle.objects.exclude(riddle_id=2) # Exclude the first riddle (id=2)
+        riddles_to_lock = Riddle.objects.exclude(riddle_id=1) # Exclude the first riddle (id=2)
         member.locked_riddles.set(riddles_to_lock)
