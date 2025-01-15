@@ -49,6 +49,7 @@ class CoopConsumer(AsyncWebsocketConsumer):
     
     async def connect(self):
         user = self.scope["user"]
+        print(user.username)
         if user.is_anonymous:
             await self.close()
         else:
