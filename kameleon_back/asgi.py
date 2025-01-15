@@ -8,13 +8,12 @@ https://docs.djangoproject.com/en/5.1/howto/deployment/asgi/
 """
 
 import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kameleon_back.settings')
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 from channels.auth import AuthMiddlewareStack
 from django.urls import path
 from back.consumers import ChatConsumer, NotificationConsumer, CoopConsumer
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kameleon_back.settings')
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
