@@ -1,7 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from .models import CoopInvitation
+from .models import CoopInvitation, Member
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -44,15 +44,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
 class CoopConsumer(AsyncWebsocketConsumer):
     
     @database_sync_to_async
-    def get_member(self, user):
-        return user.member
+    def get_member(self, username):
+        return Member.objects.get(user__username=username)
     
     async def connect(self):
         user = self.scope["user"]
         if user.is_anonymous:
             await self.close()
         else:
-            self.member = await self.get_member(user)
+            self.member = await self.get_member(user.username)
             self.riddle_id = self.scope['url_route']['kwargs']['riddle_id']
             self.group_name = f"coop_{self.riddle_id}"
 
