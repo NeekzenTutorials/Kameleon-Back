@@ -125,7 +125,7 @@ class PasswordResetView(APIView):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
 
         # Créer le lien de réinitialisation
-        reset_link = f"{settings.FRONTEND_URL}/reset-password?uid={uid}&token={token}"
+        reset_link = f"{settings.FRONTEND_URL}/reset_password?uid={uid}&token={token}"
 
         # Envoyer l'e-mail
         send_mail(
