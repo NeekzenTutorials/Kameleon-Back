@@ -486,6 +486,9 @@ class IsRiddleSolved(APIView):
         # If the response is incorrect
         return Response({'is_solved': False, 'message': 'Incorrect answer'}, status=status.HTTP_200_OK)
     
+from django.http import JsonResponse
+from rest_framework.exceptions import ValidationError
+
 class IsCoopRiddleSolved(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -495,7 +498,7 @@ class IsCoopRiddleSolved(APIView):
         member = user.member
 
         riddle_id = data.get('riddle_id')
-        user_response = data.get('response')
+        user_response = data.get('response')  # Expected as a JSON object
 
         # If riddle_id doesn't exist
         try:
@@ -509,13 +512,22 @@ class IsCoopRiddleSolved(APIView):
             return Response({'is_solved': True, 'message': 'Riddle already solved'}, status=status.HTTP_200_OK)
 
         # Check if the response is correct
-        if user_response == riddle.riddle_response:
-            # Add the riddle to the user's solved riddles
-            member.add__coop_riddle_to_achieved_coop(riddle)
-            return Response({'is_solved': True, 'message': 'Correct answer!'}, status=status.HTTP_200_OK)
+        try:
+            # Parse expected riddle response from JSONField
+            expected_response = riddle.riddle_response
 
-        # If the response is incorrect
-        return Response({'is_solved': False, 'message': 'Incorrect answer'}, status=status.HTTP_200_OK)
+            # Compare user_response and expected_response
+            if user_response == expected_response:
+                # Add the riddle to the user's solved riddles
+                member.add__coop_riddle_to_achieved_coop(riddle)
+                return Response({'is_solved': True, 'message': 'Correct answer!'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'is_solved': False, 'message': 'Incorrect answer.'}, status=status.HTTP_200_OK)
+
+        except ValueError as e:
+            # Handle invalid JSON or incorrect format
+            return Response({'error': 'Invalid response format.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
     
 class GetClue(APIView):
     permission_classes = [IsAuthenticated]
