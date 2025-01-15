@@ -25,7 +25,8 @@ from .views import (
     RespondCoopInvitationView,
     CoopConnectedMembersView,
     InviteMemberToCoopView,
-    FetchReceivedInvitationsView
+    FetchReceivedInvitationsView,
+    UpdateBioView
 )
 
 urlpatterns = [
@@ -34,6 +35,7 @@ urlpatterns = [
     path('api/login/', LogInView.as_view(), name='login'),
     path('api/user/', UserDetailView.as_view(), name='user-detail'),
     path('api/members/', MemberDetailView.as_view(), name='member-detail'),
+    path('api/members/update-bio/', UpdateBioView.as_view(), name='update_bio'),
     path('api/members/<str:username>/riddles/', MemberRiddlesView.as_view(), name='member-riddles'),
     path('api/members/<str:username>/riddles/coop/', MemberCoopRiddlesView.as_view(), name='member-coop-riddles'),
     path("api/members/<str:username>/dashboard/", MemberDashboardView.as_view(), name="member_dashboard"),

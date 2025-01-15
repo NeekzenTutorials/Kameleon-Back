@@ -582,3 +582,20 @@ class FetchReceivedInvitationsView(APIView):
         pending_invitations = CoopInvitation.objects.filter(invitee=member, status='pending')
         serializer = CoopInvitationSerializer(pending_invitations, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class UpdateBioView(APIView):
+    """
+    Vue pour mettre à jour la biographie de l'utilisateur connecté.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        user = request.user
+        bio = request.data.get("bio")
+
+        if bio is None:
+            return Response({"error": "La biographie est obligatoire."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.bio = bio
+        user.save()
+        return Response({"message": "Biographie mise à jour avec succès !"}, status=status.HTTP_200_OK)
