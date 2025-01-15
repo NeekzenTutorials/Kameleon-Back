@@ -229,7 +229,7 @@ class Riddle(models.Model):
     riddle_id = models.AutoField(primary_key=True)
     riddle_type = models.CharField(max_length=50)
     riddle_variable = models.TextField()
-    riddle_response = models.TextField()
+    riddle_response = models.JSONField()
     riddle_difficulty = models.IntegerField()
     riddle_theme = models.CharField(max_length=100)
     riddle_points = models.IntegerField()
