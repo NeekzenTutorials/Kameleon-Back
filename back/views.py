@@ -515,7 +515,8 @@ class IsCoopRiddleSolved(APIView):
         try:
             # Parse expected riddle response from JSONField
             expected_response = riddle.riddle_response
-
+            print("DEBUG: ", expected_response)
+            print("DEBUG: ", user_response)
             # Compare user_response and expected_response
             if user_response == expected_response:
                 # Add the riddle to the user's solved riddles
