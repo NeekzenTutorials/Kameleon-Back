@@ -46,7 +46,7 @@ class MemberSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Member
-        fields = ['user', 'member_score', 'member_clan_score', 'achieved_riddles', 'locked_riddles', 'achieved_coop_riddles', 'locked_coop_riddles']
+        fields = ['user', 'member_score', 'member_clan_score', 'achieved_riddles', 'locked_riddles', 'achieved_coop_riddles', 'locked_coop_riddles', 'have_calculatrice']
         read_only_fields = ['user']
         
 class ClueSerializer(serializers.ModelSerializer):

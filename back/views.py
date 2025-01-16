@@ -514,7 +514,7 @@ class IsRiddleSolved(APIView):
             # Add the riddle to the user's solved riddles
             member.add_riddle_to_achieved(riddle)
             if riddle_id == 9: # Get Calculatrice
-                member.haveCalculatrice = True
+                member.have_calculatrice = True
             return Response({'is_solved': True, 'message': 'Correct answer!'}, status=status.HTTP_200_OK)
 
         # If the response is incorrect
