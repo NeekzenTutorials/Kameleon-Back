@@ -517,18 +517,35 @@ class IsCoopRiddleSolved(APIView):
             try:
                 # Generate a random number between 0 and 9999
                 random_number = random.randint(0, 9999)
-                print(f"Generated random number: {random_number}")
-                random_number_str = str(random_number)
+                random_number_str = str(random_number)  # Convert to string for comparison
                 user_response = data.get("response", {}).get("value", {})
+                
+                # Debugging: Return the random number and user response for validation
+                debug_info = {
+                    "generated_random_number": random_number_str,
+                    "user_response_values": user_response,
+                }
+
                 # Check if the random number is in user_response values
                 if random_number_str in user_response.values():
                     member.achieved_coop_riddles.add(riddle)
-                    return Response({"is_solved": True, "message": "Correct answer!"}, status=status.HTTP_200_OK)
+                    return Response({
+                        "is_solved": True,
+                        "message": "Correct answer!",
+                        "debug_info": debug_info
+                    }, status=status.HTTP_200_OK)
                 else:
-                    return Response({"is_solved": False, "message": "Incorrect answer."}, status=status.HTTP_200_OK)
+                    return Response({
+                        "is_solved": False,
+                        "message": "Incorrect answer.",
+                        "debug_info": debug_info
+                    }, status=status.HTTP_200_OK)
 
             except Exception as e:
-                return Response({"error": "An error occurred while processing riddle 8", "details": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({
+                    "error": "An error occurred while processing riddle 8",
+                    "details": str(e)
+                }, status=status.HTTP_400_BAD_REQUEST)
 
         # Check if the response is correct
         try:
