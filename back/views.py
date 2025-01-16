@@ -559,7 +559,7 @@ class IsCoopRiddleSolved(APIView):
                 member.add__coop_riddle_to_achieved_coop(riddle)
                 return Response({'is_solved': True, 'message': 'Correct answer!'}, status=status.HTTP_200_OK)
             else:
-                return Response({'is_solved': False, 'message': 'Incorrect answer.'}, status=status.HTTP_200_OK)
+                return Response({'is_solved': False, 'message': 'Incorrect answer...'}, status=status.HTTP_200_OK)
 
         except ValueError as e:
             # Handle invalid JSON or incorrect format
