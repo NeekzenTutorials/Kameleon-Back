@@ -76,6 +76,7 @@ class Member(models.Model):
     rank = models.ForeignKey('Rank', on_delete=models.SET_NULL, null=True, blank=True)
     clan = models.ForeignKey('Clan', on_delete=models.SET_NULL, null=True, blank=True)
     is_clan_admin = models.BooleanField(default=False)
+    have_calculatrice = models.BooleanField(default=False)
     
     achieved_riddles = models.ManyToManyField(
         'Riddle',
@@ -234,7 +235,6 @@ class Riddle(models.Model):
     riddle_theme = models.CharField(max_length=100)
     riddle_points = models.IntegerField()
     riddle_path = models.CharField(max_length=50, blank=True, null=True)
-    haveCalculatrice = models.BooleanField(default=False)
     riddle_dependance = models.ManyToManyField(
         'self',
         blank=True,

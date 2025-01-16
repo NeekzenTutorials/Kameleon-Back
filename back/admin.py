@@ -52,7 +52,7 @@ class MemberAdmin(admin.ModelAdmin):
         'clan_name',
         'clan_image_preview',
         'is_clan_admin',
-        'haveCalculatrice'
+        'have_calculatrice'
     )
     search_fields = ('user__username', 'clan__clan_name')
     list_filter = ('member_score', 'clan')
