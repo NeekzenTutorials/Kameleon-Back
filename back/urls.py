@@ -30,7 +30,8 @@ from .views import (
     PasswordResetView,
     PasswordResetConfirmView,
     ClanDetailView,
-    RiddleStatsView
+    RiddleStatsView,
+    UpdateRiddleStatsView
 )
 
 urlpatterns = [
@@ -48,6 +49,7 @@ urlpatterns = [
     path('api/user/update/', UserUpdateView.as_view(), name='user-update'),
     path('api/riddles/', SoloRiddleListView.as_view(), name='riddle-list'),
     path('api/riddles/stats/', RiddleStatsView.as_view(), name='riddle-stats'),
+    path('api/riddles/stats/update/', UpdateRiddleStatsView.as_view(), name='update-riddle-stats'),
     path('api/riddles/coop/', CoopRiddleListView.as_view(), name='riddle-coop-list'),
     path('api/riddles/<int:riddle_id>/', RiddleDetailView.as_view(), name='riddle-detail'),
     path('api/riddles/solve/', IsRiddleSolved.as_view(), name='is-riddle-solved'),
