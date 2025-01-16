@@ -82,13 +82,15 @@ class LogInView(APIView):
         username = data.get('username')
         password = data.get('password')
 
-        # Authentifier l'utilisateur
-        user = authenticate(username=username, password=password)
+        user = User.objects.get(username=username)
 
         if user is not None:
             if not user.is_active:
                 return Response({'error': 'Votre compte n\'est pas actif. Veuillez vérifer votre adresse email pour l\'activer.'},
                                 status=status.HTTP_403_FORBIDDEN)
+            
+            # Authentifier l'utilisateur
+            user = authenticate(username=username, password=password)
 
             refresh = RefreshToken.for_user(user) # Generate authentification token
             return Response({
