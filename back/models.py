@@ -234,6 +234,7 @@ class Riddle(models.Model):
     riddle_theme = models.CharField(max_length=100)
     riddle_points = models.IntegerField()
     riddle_path = models.CharField(max_length=50, blank=True, null=True)
+    haveCalculatrice = models.BooleanField(default=False)
     riddle_dependance = models.ManyToManyField(
         'self',
         blank=True,
