@@ -509,6 +509,7 @@ class IsRiddleSolved(APIView):
         if riddle in member_achieved_riddles:
             if riddle_id == 9: # Get Calculatrice
                 member.have_calculatrice = True
+                member.save()
             return Response({'is_solved': True, 'message': 'Riddle already solved'}, status=status.HTTP_200_OK)
 
         # Check if the response is correct
@@ -517,6 +518,7 @@ class IsRiddleSolved(APIView):
             member.add_riddle_to_achieved(riddle)
             if riddle_id == 9: # Get Calculatrice
                 member.have_calculatrice = True
+                member.save()
             return Response({'is_solved': True, 'message': 'Correct answer!'}, status=status.HTTP_200_OK)
 
         # If the response is incorrect
