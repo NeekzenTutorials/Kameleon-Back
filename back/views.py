@@ -265,7 +265,7 @@ class RiddleStatsView(APIView):
 
         # Valider les objets Member et Riddle
         member = get_object_or_404(Member, user__username=member_name)
-        riddle = get_object_or_404(Riddle, id=riddle_id)
+        riddle = get_object_or_404(Riddle, riddle_id=riddle_id)
 
         # Récupérer ou créer une statistique
         riddle_stats, created = MemberRiddleStats.objects.get_or_create(
@@ -307,7 +307,7 @@ class UpdateRiddleStatsView(APIView):
 
         # Récupérer le membre et l'énigme
         member = get_object_or_404(Member, user__username=member_name)
-        riddle = get_object_or_404(Riddle, id=riddle_id)
+        riddle = get_object_or_404(Riddle, riddle_id=riddle_id)
 
         # Récupérer ou créer les statistiques
         riddle_stats, created = MemberRiddleStats.objects.get_or_create(member=member, riddle=riddle)
