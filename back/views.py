@@ -308,6 +308,8 @@ class MemberDashboardView(APIView):
             "achieved_riddles_count": achieved_riddles_count,
             "bio": bio,
             "riddle_theme_distribution": theme_distribution,  # ex: {"cryptographie": 80, "math": 20}
+            "is_clan_admin": member.is_clan_admin,
+            "clan_score": member.member_clan_score,
         }
 
         return Response(data, status=status.HTTP_200_OK)
