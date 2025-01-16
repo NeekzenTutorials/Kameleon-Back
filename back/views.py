@@ -348,6 +348,23 @@ class CheckRiddleStatsView(APIView):
 
         return Response({"exists": exists}, status=200)
     
+class GetRiddleStatsView(APIView):
+    """
+    Vue pour récupérer les statistiques d'une énigme pour un membre.
+    """
+
+    def get(self, request, riddle_id, username):
+        # Récupérer le membre et l'énigme
+        member = get_object_or_404(Member, user__username=username)
+        riddle = get_object_or_404(Riddle, riddle_id=riddle_id)
+
+        # Récupérer les statistiques ou retourner une erreur si elles n'existent pas
+        stats = get_object_or_404(MemberRiddleStats, member=member, riddle=riddle)
+
+        # Sérialiser et retourner les statistiques
+        serializer = RiddleStatsSerializer(stats)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 class MemberDashboardView(APIView):
     """
     Send the following data:

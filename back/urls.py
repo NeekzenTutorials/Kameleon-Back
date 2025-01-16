@@ -32,7 +32,8 @@ from .views import (
     ClanDetailView,
     RiddleStatsView,
     UpdateRiddleStatsView,
-    CheckRiddleStatsView
+    CheckRiddleStatsView,
+    GetRiddleStatsView
 )
 
 urlpatterns = [
@@ -50,6 +51,7 @@ urlpatterns = [
     path('api/user/update/', UserUpdateView.as_view(), name='user-update'),
     path('api/riddles/', SoloRiddleListView.as_view(), name='riddle-list'),
     path('api/riddles/stats/', RiddleStatsView.as_view(), name='riddle-stats'),
+    path('api/riddles/stats/<int:riddle_id>/<str:username>/', GetRiddleStatsView.as_view(), name='get-riddle-stats'),
     path('api/riddles/stats/update/', UpdateRiddleStatsView.as_view(), name='update-riddle-stats'),
     path('api/riddles/stats/check/<int:riddle_id>/<str:member_name>/', CheckRiddleStatsView.as_view(), name='check-riddle-stats'),
     path('api/riddles/coop/', CoopRiddleListView.as_view(), name='riddle-coop-list'),
