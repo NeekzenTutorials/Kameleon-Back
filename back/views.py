@@ -87,17 +87,17 @@ class LogInView(APIView):
 
         if user is not None:
             if not user.is_active:
-                return Response({'error': 'Account is not active. Please verify your email to activate your account.'},
+                return Response({'error': 'Votre compte n\'est pas actif. Veuillez vérifer votre adresse email pour l\'activer.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
             refresh = RefreshToken.for_user(user) # Generate authentification token
             return Response({
-                'message': 'User logged in successfully',
+                'message': 'Connexion réussie! Redirection...',
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'Nom d\'utilisateur ou mot de passe incorrect'}, status=status.HTTP_401_UNAUTHORIZED)
         
 class PasswordResetView(APIView):
     def post(self, request):
