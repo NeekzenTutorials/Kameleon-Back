@@ -485,7 +485,7 @@ class IsRiddleSolved(APIView):
                 # Check if the random number is in user_response values
                 if random_number_str in user_response.values():
                     logger.info(f"Riddle 8 solved successfully by user {user.username}")
-                    member.achieved_coop_riddles.add(riddle)
+                    member.add_riddle_to_achieved(riddle)
                     return Response({
                         "is_solved": True,
                         "message": "Correct answer!",
