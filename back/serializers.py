@@ -127,6 +127,7 @@ class RiddleStatsSerializer(serializers.ModelSerializer):
             'id',
             'member',
             'riddle',
+            'try_count',
             'errors_count',
             'resolution_count',
             'first_resolved_at',

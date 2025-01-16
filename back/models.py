@@ -255,6 +255,7 @@ class Riddle(models.Model):
 class MemberRiddleStats(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="riddle_stats")
     riddle = models.ForeignKey(Riddle, on_delete=models.CASCADE, related_name="member_stats")
+    try_count = models.PositiveIntegerField(default=0, verbose_name="Nombre d'essais")
     errors_count = models.PositiveIntegerField(default=0, verbose_name="Nombre d'erreurs")
     solve_count = models.PositiveIntegerField(default=0, verbose_name="Nombre de résolutions")
     first_solved_at = models.DateTimeField(null=True, blank=True, verbose_name="Première résolution")
@@ -279,6 +280,11 @@ class MemberRiddleStats(models.Model):
     def increment_errors(self):
         """Incrémente le compteur d'erreurs."""
         self.errors_count += 1
+        self.save()
+
+    def increment_tries(self):
+        """Incrémente le compteur d'essais."""
+        self.try_count += 1
         self.save()
     
 

@@ -21,7 +21,7 @@ from asgiref.sync import async_to_sync
 from django.utils.timezone import now
 from channels.layers import get_channel_layer
 from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer, ClanSerializer, CVSerializer, CoopInvitationSerializer, RiddleStatsSerializer
-from .models import User, Riddle, Member, Clue, Clan, CV, CoopInvitation, MemberRiddlesStats
+from .models import User, Riddle, Member, Clue, Clan, CV, CoopInvitation, MemberRiddleStats
 import requests
 
 
@@ -257,22 +257,24 @@ class RiddleStatsView(APIView):
     """
 
     def post(self, request):
-        member_id = request.data.get('member_id')
+        member_name = request.data.get('member_name')
         riddle_id = request.data.get('riddle_id')
         errors_count = request.data.get('errors_count', 0)
         is_resolved = request.data.get('is_resolved', False)
+        try_count = request.data.get('try_count', 1)
 
         # Valider les objets Member et Riddle
-        member = get_object_or_404(Member, id=member_id)
+        member = get_object_or_404(Member, user__username=member_name)
         riddle = get_object_or_404(Riddle, id=riddle_id)
 
         # Récupérer ou créer une statistique
-        riddle_stats, created = MemberRiddlesStats.objects.get_or_create(
+        riddle_stats, created = MemberRiddleStats.objects.get_or_create(
             member=member,
             riddle=riddle,
             defaults={
                 'errors_count': errors_count,
                 'is_resolved': is_resolved,
+                'try_count': try_count,
             },
         )
 
@@ -288,6 +290,49 @@ class RiddleStatsView(APIView):
         # Sérialiser et retourner la réponse
         serializer = RiddleStatsSerializer(riddle_stats)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+class UpdateRiddleStatsView(APIView):
+    """
+    Vue pour mettre à jour les statistiques d'une énigme pour un membre.
+    """
+
+    def post(self, request):
+        member_name = request.data.get('member_name')
+        riddle_id = request.data.get('riddle_id')
+        action = request.data.get('action')  # Peut être 'mark_solved', 'increment_errors', 'increment_tries'
+
+        # Validation des données
+        if not member_name or not riddle_id or not action:
+            return Response({"error": "Membre, énigme et action sont requis."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Récupérer le membre et l'énigme
+        member = get_object_or_404(Member, user__username=member_name)
+        riddle = get_object_or_404(Riddle, id=riddle_id)
+
+        # Récupérer ou créer les statistiques
+        riddle_stats, created = MemberRiddleStats.objects.get_or_create(member=member, riddle=riddle)
+
+        # Appliquer l'action
+        if action == 'mark_solved':
+            riddle_stats.mark_solved()
+        elif action == 'increment_errors':
+            riddle_stats.increment_errors()
+        elif action == 'increment_tries':
+            riddle_stats.increment_tries()
+        else:
+            return Response({"error": "Action non valide."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Retourner la réponse
+        return Response({
+            "message": f"Action '{action}' appliquée avec succès.",
+            "stats": {
+                "try_count": riddle_stats.try_count,
+                "errors_count": riddle_stats.errors_count,
+                "solve_count": riddle_stats.solve_count,
+                "is_solved": riddle_stats.is_solved,
+                "first_solved_at": riddle_stats.first_solved_at,
+            }
+        }, status=status.HTTP_200_OK)
     
 class MemberDashboardView(APIView):
     """
