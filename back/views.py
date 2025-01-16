@@ -518,9 +518,10 @@ class IsCoopRiddleSolved(APIView):
                 # Generate a random number between 0 and 9999
                 random_number = random.randint(0, 9999)
                 print(f"Generated random number: {random_number}")
+                random_number_str = str(random_number)
                 user_response = data.get("response", {}).get("value", {})
                 # Check if the random number is in user_response values
-                if any(int(value) == random_number for value in user_response.values()):
+                if random_number_str in user_response.values():
                     member.achieved_coop_riddles.add(riddle)
                     return Response({"is_solved": True, "message": "Correct answer!"}, status=status.HTTP_200_OK)
                 else:
