@@ -507,6 +507,8 @@ class IsRiddleSolved(APIView):
         # If user already solved the riddle
         member_achieved_riddles = member.achieved_riddles.all()
         if riddle in member_achieved_riddles:
+            if riddle_id == 9: # Get Calculatrice
+                member.have_calculatrice = True
             return Response({'is_solved': True, 'message': 'Riddle already solved'}, status=status.HTTP_200_OK)
 
         # Check if the response is correct
