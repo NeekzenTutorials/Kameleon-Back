@@ -488,6 +488,7 @@ class IsRiddleSolved(APIView):
     
 from django.http import JsonResponse
 from rest_framework.exceptions import ValidationError
+import random
 
 class IsCoopRiddleSolved(APIView):
     permission_classes = [IsAuthenticated]
@@ -510,6 +511,23 @@ class IsCoopRiddleSolved(APIView):
         member_achieved_riddles = member.achieved_coop_riddles.all()
         if riddle in member_achieved_riddles:
             return Response({'is_solved': True, 'message': 'Riddle already solved'}, status=status.HTTP_200_OK)
+        
+        # Special case for riddle_id 8
+        if riddle_id == 8:
+            try:
+                # Generate a random number between 0 and 9999
+                random_number = random.randint(0, 9999)
+                print(f"Generated random number: {random_number}")
+                user_response = data.get("response", {}).get("value", {})
+                # Check if the random number is in user_response values
+                if any(int(value) == random_number for value in user_response.values()):
+                    member.achieved_coop_riddles.add(riddle)
+                    return Response({"is_solved": True, "message": "Correct answer!"}, status=status.HTTP_200_OK)
+                else:
+                    return Response({"is_solved": False, "message": "Incorrect answer."}, status=status.HTTP_200_OK)
+
+            except Exception as e:
+                return Response({"error": "An error occurred while processing riddle 8", "details": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         # Check if the response is correct
         try:
