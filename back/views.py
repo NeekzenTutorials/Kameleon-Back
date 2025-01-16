@@ -34,7 +34,7 @@ class SignUpView(APIView):
             try:
                 validate_email(email)
             except ValidationError:
-                return Response({'error': 'Invalid email format'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'Format d\'email invalide'}, status=status.HTTP_400_BAD_REQUEST)
             
             user = User.objects.create(
                 username=data['username'],
@@ -55,7 +55,7 @@ class SignUpView(APIView):
                 fail_silently=False,
             )
 
-            return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
+            return Response({'message': 'Utilisateur crée! Redirection...'}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -381,6 +381,38 @@ class ClanListView(generics.ListAPIView):
     queryset = Clan.objects.all()
     serializer_class = ClanSerializer
     permission_classes = [IsAuthenticated]
+
+class ClanDetailView(APIView):
+    def get(self, request, clan_name):
+        clan = get_object_or_404(Clan, clan_name=clan_name)
+        
+        members = Member.objects.filter(clan=clan)
+        
+        clan_data = {
+            "clan": {
+                "id": clan.clan_id,
+                "name": clan.clan_name,
+                "bio": clan.clan_bio,
+                "picture": clan.clan_pci.url if clan.clan_pci else None,
+                "elo": clan.clan_elo,
+                "members_count": clan.clan_members_count,
+                "max_members": clan.clan_members_max_count,
+                "created_at": clan.created_at,
+            },
+            "members": [
+                {
+                    "username": member.user.username,
+                    "email": member.user.email,
+                    "score": member.member_score,
+                    "clan_score": member.member_clan_score,
+                    "rank": member.rank.name if member.rank else None,
+                    "is_clan_admin": member.is_clan_admin,
+                }
+                for member in members
+            ],
+        }
+        
+        return Response(clan_data, status=status.HTTP_200_OK)
     
 class CoopConnectedMembersView(APIView):
     permission_classes = [IsAuthenticated]
