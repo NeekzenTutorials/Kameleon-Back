@@ -407,7 +407,7 @@ class ClanDetailView(APIView):
                     "email": member.user.email,
                     "score": member.member_score,
                     "clan_score": member.member_clan_score,
-                    "rank": member.rank.name if member.rank else None,
+                    "rank": member.rank.rank_name if member.rank else None,
                     "is_clan_admin": member.is_clan_admin,
                 }
                 for member in members
