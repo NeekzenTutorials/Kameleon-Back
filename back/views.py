@@ -396,6 +396,11 @@ class ClanDetailView(APIView):
             .annotate(count=Count("riddle_theme"))
         )
 
+        # Nombre total d'énigmes réalisées par tous les membres
+        total_riddles_completed = Riddle.objects.filter(
+            achieved_by_members__in=members
+        ).count()
+
         global_theme_distribution = {}
         total_riddles = sum(item["count"] for item in global_theme_counts)
         if total_riddles > 0:
@@ -415,6 +420,7 @@ class ClanDetailView(APIView):
             "members_count": clan.clan_members_count,
             "max_members": clan.clan_members_max_count,
             "created_at": clan.created_at,
+            "total_riddles_completed": total_riddles_completed,
         }
 
         # Membres avec riddle_theme_distribution
