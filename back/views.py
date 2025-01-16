@@ -341,7 +341,7 @@ class CheckRiddleStatsView(APIView):
 
     def get(self, request, riddle_id, member_name):
         member = get_object_or_404(Member, user__username=member_name)
-        riddle = get_object_or_404(Riddle, id=riddle_id)
+        riddle = get_object_or_404(Riddle, riddle_id=riddle_id)
 
         # Vérifier si la statistique existe
         exists = MemberRiddleStats.objects.filter(member=member, riddle=riddle).exists()
