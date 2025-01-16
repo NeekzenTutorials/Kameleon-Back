@@ -252,6 +252,36 @@ class Riddle(models.Model):
         return f"Riddle {self.riddle_id} ({self.riddle_theme})"
     
 
+class MemberRiddleStats(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="riddle_stats")
+    riddle = models.ForeignKey(Riddle, on_delete=models.CASCADE, related_name="member_stats")
+    errors_count = models.PositiveIntegerField(default=0, verbose_name="Nombre d'erreurs")
+    solve_count = models.PositiveIntegerField(default=0, verbose_name="Nombre de résolutions")
+    first_solved_at = models.DateTimeField(null=True, blank=True, verbose_name="Première résolution")
+    is_solved = models.BooleanField(default=False, verbose_name="Résolue")
+
+    class Meta:
+        unique_together = ("member", "riddle")  # Un membre ne peut avoir qu'une seule entrée par énigme
+        verbose_name = "Statistiques Membre-Énigme"
+        verbose_name_plural = "Statistiques Membre-Énigmes"
+
+    def __str__(self):
+        return f"{self.member.user.username} - {self.riddle.riddle_id} (Résolue : {self.is_solved})"
+
+    def mark_solved(self):
+        """Marque l'énigme comme résolue et met à jour les statistiques associées."""
+        if not self.is_solved:
+            self.is_solved = True
+            self.first_solved_at = now()
+        self.solve_count += 1
+        self.save()
+
+    def increment_errors(self):
+        """Incrémente le compteur d'erreurs."""
+        self.errors_count += 1
+        self.save()
+    
+
 class Clue(models.Model):
     clue_id = models.AutoField(primary_key=True)
     clue_text = models.TextField()

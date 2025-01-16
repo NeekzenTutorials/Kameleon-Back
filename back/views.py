@@ -18,9 +18,10 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_str, force_bytes
 from django.db.models import Count
 from asgiref.sync import async_to_sync
+from django.utils.timezone import now
 from channels.layers import get_channel_layer
-from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer, ClanSerializer, CVSerializer, CoopInvitationSerializer
-from .models import User, Riddle, Member, Clue, Clan, CV, CoopInvitation
+from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer, ClanSerializer, CVSerializer, CoopInvitationSerializer, RiddleStatsSerializer
+from .models import User, Riddle, Member, Clue, Clan, CV, CoopInvitation, MemberRiddlesStats
 import requests
 
 
@@ -249,6 +250,44 @@ class RiddleDetailView(generics.RetrieveAPIView):
     serializer_class = RiddleSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'riddle_id'
+
+class RiddleStatsView(APIView):
+    """
+    Vue pour créer ou mettre à jour les statistiques d'une énigme pour un membre.
+    """
+
+    def post(self, request):
+        member_id = request.data.get('member_id')
+        riddle_id = request.data.get('riddle_id')
+        errors_count = request.data.get('errors_count', 0)
+        is_resolved = request.data.get('is_resolved', False)
+
+        # Valider les objets Member et Riddle
+        member = get_object_or_404(Member, id=member_id)
+        riddle = get_object_or_404(Riddle, id=riddle_id)
+
+        # Récupérer ou créer une statistique
+        riddle_stats, created = MemberRiddlesStats.objects.get_or_create(
+            member=member,
+            riddle=riddle,
+            defaults={
+                'errors_count': errors_count,
+                'is_resolved': is_resolved,
+            },
+        )
+
+        if not created:
+            # Mettre à jour les données si elles existent déjà
+            riddle_stats.errors_count += errors_count
+            if is_resolved and not riddle_stats.is_resolved:
+                riddle_stats.is_resolved = True
+                riddle_stats.first_resolved_at = riddle_stats.first_resolved_at or now()
+            riddle_stats.resolution_count += 1 if is_resolved else 0
+            riddle_stats.save()
+
+        # Sérialiser et retourner la réponse
+        serializer = RiddleStatsSerializer(riddle_stats)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class MemberDashboardView(APIView):
     """

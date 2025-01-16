@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Riddle, Clue, Member, Clan, CV, CoopInvitation
+from .models import User, Riddle, Clue, Member, Clan, CV, CoopInvitation, MemberRiddleStats
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -116,3 +116,21 @@ class CoopInvitationSerializer(serializers.ModelSerializer):
         model = CoopInvitation
         fields = ['id', 'riddle', 'riddle_type', 'inviter', 'inviter_username', 'invitee', 'invitee_username', 'status', 'created_at']
         read_only_fields = ['id', 'status', 'created_at']
+
+class RiddleStatsSerializer(serializers.ModelSerializer):
+    member_username = serializers.ReadOnlyField(source='member.user.username')
+    riddle_name = serializers.ReadOnlyField(source='riddle.riddle_type')
+
+    class Meta:
+        model = MemberRiddleStats
+        fields = [
+            'id',
+            'member',
+            'riddle',
+            'errors_count',
+            'resolution_count',
+            'first_resolved_at',
+            'is_resolved',
+            'member_username',
+            'riddle_name',
+        ]
