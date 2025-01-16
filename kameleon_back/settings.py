@@ -170,6 +170,40 @@ CHANNEL_LAYERS = {
     },
 }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,  # Conserve les loggers par défaut
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',  # Utilise le format verbose
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  # Définit le niveau de logging
+            'propagate': True,
+        },
+        # Logger personnalisé pour votre application
+        'custom_logger': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

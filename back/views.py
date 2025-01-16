@@ -489,6 +489,8 @@ class IsRiddleSolved(APIView):
 from django.http import JsonResponse
 from rest_framework.exceptions import ValidationError
 import random
+import logging
+logger = logging.getLogger('custom_logger')
 
 class IsCoopRiddleSolved(APIView):
     permission_classes = [IsAuthenticated]
@@ -519,6 +521,8 @@ class IsCoopRiddleSolved(APIView):
                 random_number = random.randint(0, 9999)
                 random_number_str = str(random_number)  # Convert to string for comparison
                 user_response = data.get("response", {}).get("value", {})
+                logger.debug(f"Generated random number: {random_number_str}")
+                logger.debug(f"User response values: {user_response}")
                 
                 # Debugging: Return the random number and user response for validation
                 debug_info = {
@@ -528,6 +532,7 @@ class IsCoopRiddleSolved(APIView):
 
                 # Check if the random number is in user_response values
                 if random_number_str in user_response.values():
+                    logger.info(f"Riddle 8 solved successfully by user {user.username}")
                     member.achieved_coop_riddles.add(riddle)
                     return Response({
                         "is_solved": True,
@@ -535,6 +540,7 @@ class IsCoopRiddleSolved(APIView):
                         "debug_info": debug_info
                     }, status=status.HTTP_200_OK)
                 else:
+                    logger.warning(f"Incorrect answer for riddle 8 by user {user.username}")
                     return Response({
                         "is_solved": False,
                         "message": "Incorrect answer.",
@@ -542,6 +548,7 @@ class IsCoopRiddleSolved(APIView):
                     }, status=status.HTTP_200_OK)
 
             except Exception as e:
+                logger.error(f"Error processing riddle 8: {str(e)}", exc_info=True)
                 return Response({
                     "error": "An error occurred while processing riddle 8",
                     "details": str(e)
