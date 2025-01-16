@@ -334,6 +334,20 @@ class UpdateRiddleStatsView(APIView):
             }
         }, status=status.HTTP_200_OK)
     
+class CheckRiddleStatsView(APIView):
+    """
+    Vue pour vérifier si une statistique existe pour un membre et une énigme.
+    """
+
+    def get(self, request, riddle_id, member_name):
+        member = get_object_or_404(Member, user__username=member_name)
+        riddle = get_object_or_404(Riddle, id=riddle_id)
+
+        # Vérifier si la statistique existe
+        exists = MemberRiddleStats.objects.filter(member=member, riddle=riddle).exists()
+
+        return Response({"exists": exists}, status=200)
+    
 class MemberDashboardView(APIView):
     """
     Send the following data:

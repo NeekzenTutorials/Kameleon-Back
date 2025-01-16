@@ -12,7 +12,8 @@ from .models import (
     VersusRiddleImage,
     HasImage,
     Resolve,
-    Clan
+    Clan,
+    MemberRiddleStats
 )
 
 admin.site.site_header = "Administration de Kameleon"
@@ -172,6 +173,40 @@ class RiddleAdmin(admin.ModelAdmin):
             return ", ".join([str(riddle) for riddle in dependencies])
         return "Aucune dépendance"
     display_dependencies.short_description = 'Dépendances de l\'énigme'
+
+@admin.register(MemberRiddleStats)
+class MemberRiddleStatsAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'member',
+        'riddle',
+        'try_count',
+        'errors_count',
+        'solve_count',
+        'is_solved',
+        'first_solved_at',
+    )
+    search_fields = (
+        'member__user__username',
+        'riddle__riddle_type',
+        'riddle__riddle_theme',
+    )
+    list_filter = (
+        'is_solved',
+        'riddle__riddle_theme',
+        'riddle__riddle_difficulty',
+    )
+    ordering = ('-solve_count',)
+    readonly_fields = ('first_solved_at',)
+    fields = (
+        'member',
+        'riddle',
+        'try_count',
+        'errors_count',
+        'solve_count',
+        'is_solved',
+        'first_solved_at',
+    )
 
 @admin.register(Clan)
 class ClanAdmin(admin.ModelAdmin):
