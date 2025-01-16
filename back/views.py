@@ -417,18 +417,36 @@ class ClanDetailView(APIView):
             "created_at": clan.created_at,
         }
 
-        # Données des membres
-        member_data = [
-            {
+        # Membres avec riddle_theme_distribution
+        member_data = []
+        for member in members:
+            # Calcul des thèmes des énigmes réussies
+            theme_counts = (
+                member.achieved_riddles
+                .values("riddle_theme")
+                .annotate(count=Count("riddle_theme"))
+            )
+            
+            # Calcul du total des énigmes réussies
+            total_riddles = sum(item["count"] for item in theme_counts)
+            theme_distribution = {}
+            if total_riddles > 0:
+                for item in theme_counts:
+                    theme = item["riddle_theme"]
+                    count = item["count"]
+                    percentage = round((count / total_riddles) * 100, 2)
+                    theme_distribution[theme] = percentage
+
+            # Ajouter les données du membre
+            member_data.append({
                 "username": member.user.username,
                 "email": member.user.email,
                 "score": member.member_score,
                 "clan_score": member.member_clan_score,
                 "rank": member.rank.rank_name if member.rank else None,
                 "is_clan_admin": member.is_clan_admin,
-            }
-            for member in members
-        ]
+                "riddle_theme_distribution": theme_distribution,  # Thèmes calculés
+            })
 
         response_data = {
             "clan": clan_data,
