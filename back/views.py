@@ -500,6 +500,8 @@ class ClanListView(generics.ListAPIView):
     Vue pour lister tous les clans.
     """
     queryset = Clan.objects.all()
+    for clan in queryset:
+        clan.update_elo()
     serializer_class = ClanSerializer
     permission_classes = [IsAuthenticated]
 
