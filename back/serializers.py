@@ -19,7 +19,14 @@ class UserSerializer(serializers.ModelSerializer):
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'profile_picture', 'created_at']
+        fields = [
+            'id',
+            'username',
+            'email',
+            'profile_picture',
+            'created_at',
+            'is_staff',
+        ]
         read_only_fields = ['id', 'created_at']
         
     def get_profile_picture(self, obj):
