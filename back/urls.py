@@ -35,7 +35,8 @@ from .views import (
     CheckRiddleStatsView,
     GetRiddleStatsView,
     MemberView,
-    UsersWithCVListView
+    UsersWithCVListView,
+    GlobalClanStatsView
 )
 
 urlpatterns = [
@@ -63,6 +64,7 @@ urlpatterns = [
     path('api/riddles/solve/', IsRiddleSolved.as_view(), name='is-riddle-solved'),
     path('api/riddles/coop/solve/', IsCoopRiddleSolved.as_view(), name='is-coop-riddle-solved'),
     path('api/clans/invite/', InviteMemberToCoopView.as_view(), name='coop-invite'),
+    path('api/clans/stats/', GlobalClanStatsView.as_view(), name='global-clan-stats'),
     path('api/clans/invitations/received/', FetchReceivedInvitationsView.as_view(), name='fetch-received-invitations'),
     path('api/coop/invitations/<int:invitation_id>/respond/', RespondCoopInvitationView.as_view(), name='respond-coop-invitation'),
     path('api/coop/members/<int:riddle_id>/', CoopConnectedMembersView.as_view(), name='coop-connected-members'),

@@ -605,6 +605,24 @@ class ClanDetailView(APIView):
 
         return Response(response_data, status=status.HTTP_200_OK)
     
+from django.db.models import Sum
+    
+class GlobalClanStatsView(APIView):
+    """
+    Retourne des statistiques globales sur les clans et les défis.
+    """
+    def get(self, request):
+        total_clans = Clan.objects.count()
+        total_defis_realises = Riddle.achieved_by_members.through.objects.count()
+        total_scores = Member.objects.aggregate(score_sum=Sum("member_score"))["score_sum"] or 0
+
+        data = {
+            "total_clans": total_clans,
+            "total_defis_realises": total_defis_realises,
+            "total_scores": total_scores,
+        }
+        return Response(data, status=status.HTTP_200_OK)
+    
 class CoopConnectedMembersView(APIView):
     permission_classes = [IsAuthenticated]
 
