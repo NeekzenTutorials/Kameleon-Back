@@ -34,7 +34,8 @@ from .views import (
     UpdateRiddleStatsView,
     CheckRiddleStatsView,
     GetRiddleStatsView,
-    MemberView
+    MemberView,
+    UsersWithCVListView
 )
 
 urlpatterns = [
@@ -44,6 +45,7 @@ urlpatterns = [
     path('password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('api/login/', LogInView.as_view(), name='login'),
     path('api/user/', UserDetailView.as_view(), name='user-detail'),
+    path('api/users/cv/', UsersWithCVListView.as_view(), name='users-with-cv'),
     path('api/members/', MemberDetailView.as_view(), name='member-detail'),
     path('api/members/all/', MemberView.as_view(), name='member-view'),
     path('api/members/update-bio/', UpdateBioView.as_view(), name='update_bio'),

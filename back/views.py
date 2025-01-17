@@ -20,7 +20,7 @@ from django.db.models import Count
 from asgiref.sync import async_to_sync
 from django.utils.timezone import now
 from channels.layers import get_channel_layer
-from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer, ClanSerializer, CVSerializer, CoopInvitationSerializer, RiddleStatsSerializer
+from .serializers import UserDetailSerializer, UserUpdateSerializer, RiddleSerializer, MemberSerializer, SimpleRiddleSerializer, ClanSerializer, CVSerializer, CoopInvitationSerializer, RiddleStatsSerializer, UserSerializer
 from .models import User, Riddle, Member, Clue, Clan, CV, CoopInvitation, MemberRiddleStats
 import requests
 
@@ -173,6 +173,17 @@ class UserDetailView(APIView):
     def get(self, request):
         user = request.user
         serializer = UserDetailSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class UsersWithCVListView(generics.ListAPIView):
+    """
+    Retourne la liste de tous les utilisateurs ayant un CV (cv != null).
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        users_with_cv = User.objects.filter(cv__isnull=False)
+        serializer = UserSerializer(users_with_cv, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class UserUpdateView(APIView):
