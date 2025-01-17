@@ -192,7 +192,7 @@ class MemberView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        members = Member.objects.all()
+        members = Member.objects.all().order_by('-member_score')
         serializer = MemberSerializer(members)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
