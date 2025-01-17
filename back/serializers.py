@@ -24,9 +24,16 @@ class UserDetailSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'profile_picture']
+        fields = [
+            'id',
+            'username',
+            'email',
+            'profile_picture',
+            'created_at',
+        ]
         
 class MemberSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
     achieved_riddles = serializers.SerializerMethodField()
     locked_riddles = serializers.SerializerMethodField()
     achieved_coop_riddles = serializers.SerializerMethodField()
@@ -44,7 +51,6 @@ class MemberSerializer(serializers.ModelSerializer):
             'locked_coop_riddles',
             'have_calculatrice',
         ]
-        read_only_fields = ['user']
 
     def get_achieved_riddles(self, obj):
         return obj.achieved_riddles.values_list('riddle_id', flat=True)
