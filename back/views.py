@@ -499,9 +499,10 @@ class ClanListView(generics.ListAPIView):
     """
     Vue pour lister tous les clans.
     """
-    queryset = Clan.objects.all()
-    for clan in queryset:
+    clans = Clan.objects.all()
+    for clan in clans:
         clan.update_elo()
+    queryset = Clan.objects.all().order_by('-clan_elo') 
     serializer_class = ClanSerializer
     permission_classes = [IsAuthenticated]
 
