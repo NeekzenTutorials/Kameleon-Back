@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import User, Riddle, Clue, Member, Clan, CV, CoopInvitation, MemberRiddleStats
 
 class UserSerializer(serializers.ModelSerializer):
+    cv_url = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = [
@@ -11,10 +12,19 @@ class UserSerializer(serializers.ModelSerializer):
             'profile_picture',
             'created_at',
             'is_staff',
+            'cv_url',
         ]
         extra_kwargs = {
             'password': {'write_only': True},
         }
+    
+    def get_cv_url(self, obj):
+        """
+        Retourne l'URL du fichier CV associé, ou None si aucun CV n'est présent.
+        """
+        if obj.cv and obj.cv.cv_file:
+            return obj.cv.cv_file.url
+        return None
         
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
