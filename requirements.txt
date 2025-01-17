@@ -11,3 +11,4 @@ requests
 Pillow
 daphne
 psycopg
+channels-redis==4.0.0
