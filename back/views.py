@@ -451,6 +451,9 @@ class CreateClanView(APIView):
             member.is_clan_admin = True
             member.save()
 
+            clan.clan_members_count += 1
+            clan.save()
+
             return Response(
                 {
                     "message": f"Clan '{clan.clan_name}' créé avec succès!",
@@ -482,6 +485,7 @@ class JoinClanView(APIView):
         member.clan = clan
         clan.clan_members_count += 1
         member.save()
+        clan.save()
 
         return Response(
             {
