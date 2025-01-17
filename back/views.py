@@ -529,6 +529,8 @@ class ClanDetailView(APIView):
                 percentage = round((count / total_riddles) * 100, 2)
                 global_theme_distribution[theme] = percentage
 
+        clan.update_elo()  # Mettre à jour l'ELO du clan
+
         # Données du clan
         clan_data = {
             "id": clan.clan_id,
@@ -687,6 +689,7 @@ class IsRiddleSolved(APIView):
                 if random_number_str in user_response.values():
                     logger.info(f"Riddle 8 solved successfully by user {user.username}")
                     member.add_riddle_to_achieved(riddle)
+                    member.clan.update_elo()
                     return Response({
                         "is_solved": True,
                         "message": "Correct answer!",
@@ -720,6 +723,7 @@ class IsRiddleSolved(APIView):
             if riddle_id == 9: # Get Calculatrice
                 member.have_calculatrice = True
                 member.save()
+                member.clan.update_elo()
             return Response({'is_solved': True, 'message': 'Correct answer!'}, status=status.HTTP_200_OK)
 
         # If the response is incorrect

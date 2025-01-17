@@ -1,6 +1,7 @@
 from django.utils.timezone import now
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from math import log2
 
 ############################################################################################################################
 # region Users
@@ -372,6 +373,19 @@ class Clan(models.Model):
 
     def __str__(self):
         return self.clan_name
+    
+    def update_elo(self):
+        """
+        Met à jour l'élo du clan en fonction des scores des membres.
+        """
+        members = self.Member.objects.filter(clan=self)  # Récupérer les membres liés à ce clan
+        members_count = members.count()
+        if members_count == 0:
+            self.clan_elo = 0.0  # Aucun membre, pas d'élo
+        else:
+            total_score = sum(member.member_score for member in members)
+            self.clan_elo = (total_score / members_count) * log2(members_count + 1)
+        self.save()
     
 class CoopInvitation(models.Model):
     STATUS_CHOICES = [
