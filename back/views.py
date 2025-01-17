@@ -193,7 +193,7 @@ class MemberView(APIView):
 
     def get(self, request):
         members = Member.objects.all().order_by('-member_score')
-        serializer = MemberSerializer(members)
+        serializer = MemberSerializer(members, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class MemberDetailView(APIView):

@@ -27,27 +27,36 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'profile_picture']
         
 class MemberSerializer(serializers.ModelSerializer):
-    achieved_riddles = serializers.PrimaryKeyRelatedField(
-        many=True, 
-        queryset=Riddle.objects.all()
-    )
-    locked_riddles = serializers.PrimaryKeyRelatedField(
-        many=True, 
-        queryset=Riddle.objects.all()
-    )
-    achieved_coop_riddles = serializers.PrimaryKeyRelatedField(
-        many=True, 
-        queryset=Riddle.objects.all()
-    )
-    locked_coop_riddles = serializers.PrimaryKeyRelatedField(
-        many=True, 
-        queryset=Riddle.objects.all()
-    )
-    
+    achieved_riddles = serializers.SerializerMethodField()
+    locked_riddles = serializers.SerializerMethodField()
+    achieved_coop_riddles = serializers.SerializerMethodField()
+    locked_coop_riddles = serializers.SerializerMethodField()
+
     class Meta:
         model = Member
-        fields = ['user', 'member_score', 'member_clan_score', 'achieved_riddles', 'locked_riddles', 'achieved_coop_riddles', 'locked_coop_riddles', 'have_calculatrice']
+        fields = [
+            'user',
+            'member_score',
+            'member_clan_score',
+            'achieved_riddles',
+            'locked_riddles',
+            'achieved_coop_riddles',
+            'locked_coop_riddles',
+            'have_calculatrice',
+        ]
         read_only_fields = ['user']
+
+    def get_achieved_riddles(self, obj):
+        return obj.achieved_riddles.values_list('riddle_id', flat=True)
+
+    def get_locked_riddles(self, obj):
+        return obj.locked_riddles.values_list('riddle_id', flat=True)
+
+    def get_achieved_coop_riddles(self, obj):
+        return obj.achieved_coop_riddles.values_list('riddle_id', flat=True)
+
+    def get_locked_coop_riddles(self, obj):
+        return obj.locked_coop_riddles.values_list('riddle_id', flat=True)
         
 class ClueSerializer(serializers.ModelSerializer):
     class Meta:
