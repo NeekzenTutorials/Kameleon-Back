@@ -187,6 +187,14 @@ class UserUpdateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class MemberView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        members = Member.objects.all()
+        serializer = MemberSerializer(members)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class MemberDetailView(APIView):
     permission_classes = [IsAuthenticated]
