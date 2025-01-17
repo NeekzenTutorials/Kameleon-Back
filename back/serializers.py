@@ -30,6 +30,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'email',
             'profile_picture',
             'created_at',
+            'is_staff',
         ]
         
 class MemberSerializer(serializers.ModelSerializer):
