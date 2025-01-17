@@ -378,7 +378,7 @@ class Clan(models.Model):
         """
         Met à jour l'élo du clan en fonction des scores des membres.
         """
-        members = self.Member.objects.filter(clan=self)  # Récupérer les membres liés à ce clan
+        members = Member.objects.filter(clan=self)  # Récupérer les membres liés à ce clan
         members_count = members.count()
         if members_count == 0:
             self.clan_elo = 0.0  # Aucun membre, pas d'élo
